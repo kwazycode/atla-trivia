@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avatar: The Last Airbender — Trivia & Study</title>
+  <style>
+    :root {
+      --air:    #f5c842;
+      --water:  #4fc3f7;
+      --earth:  #6abf69;
+      --fire:   #ef5350;
+      --spirit: #ce93d8;
+      --gaang:  #ffb74d;
+      --story:  #80cbc4;
+
+      --bg:     #0a0e1a;
+      --bg2:    #111827;
+      --bg3:    #1c2535;
+      --border: #2a3347;
+      --text:   #e6edf3;
+      --muted:  #8b949e;
+      --correct:#4caf50;
+      --wrong:  #f44336;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────── */
+    header {
+      width: 100%;
+      padding: 24px 20px 16px;
+      text-align: center;
+      background: linear-gradient(180deg, #0d1220 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    header h1 span.air   { color: var(--air);    }
+    header h1 span.water { color: var(--water);  }
+    header h1 span.earth { color: var(--earth);  }
+    header h1 span.fire  { color: var(--fire);   }
+    header p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    /* ─── SCREENS ────────────────────────────────────── */
+    .screen { display: none; width: 100%; max-width: 780px; padding: 28px 20px 60px; }
+    .screen.active { display: block; }
+
+    /* ─── BUTTONS ────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 24px; border-radius: 10px; border: none; cursor: pointer;
+      font-size: 1rem; font-weight: 600; transition: all 0.15s ease;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--water); color: #0a0e1a; }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-correct  { background: var(--correct); color: #fff; }
+    .btn-wrong    { background: var(--wrong); color: #fff; }
+    .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+
+    /* ─── HOME SCREEN ────────────────────────────────── */
+    .mode-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0;
+    }
+    @media (max-width: 480px) { .mode-cards { grid-template-columns: 1fr; } }
+
+    .mode-card {
+      background: var(--bg2); border: 2px solid var(--border);
+      border-radius: 16px; padding: 28px 22px; cursor: pointer;
+      transition: all 0.18s ease; text-align: center;
+    }
+    .mode-card:hover { border-color: var(--water); transform: translateY(-3px); }
+    .mode-card .icon { font-size: 2.8rem; margin-bottom: 12px; }
+    .mode-card h2 { font-size: 1.25rem; margin-bottom: 6px; }
+    .mode-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+
+    /* category chips */
+    .cat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .chip {
+      padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; border: 2px solid transparent; background: var(--bg3);
+      transition: all 0.14s;
+    }
+    .chip.selected { color: var(--bg); }
+    .chip[data-cat="all"]    { border-color: var(--muted); }
+    .chip[data-cat="gaang"]  { border-color: var(--gaang);  }
+    .chip[data-cat="fire"]   { border-color: var(--fire);   }
+    .chip[data-cat="water"]  { border-color: var(--water);  }
+    .chip[data-cat="earth"]  { border-color: var(--earth);  }
+    .chip[data-cat="bending"]{ border-color: var(--air);    }
+    .chip[data-cat="spirits"]{ border-color: var(--spirit); }
+    .chip[data-cat="story"]  { border-color: var(--story);  }
+
+    .chip.selected[data-cat="all"]    { background: var(--muted); }
+    .chip.selected[data-cat="gaang"]  { background: var(--gaang);  }
+    .chip.selected[data-cat="fire"]   { background: var(--fire);   }
+    .chip.selected[data-cat="water"]  { background: var(--water);  }
+    .chip.selected[data-cat="earth"]  { background: var(--earth);  }
+    .chip.selected[data-cat="bending"]{ background: var(--air);    }
+    .chip.selected[data-cat="spirits"]{ background: var(--spirit); }
+    .chip.selected[data-cat="story"]  { background: var(--story);  }
+
+    /* ─── STUDY SCREEN ───────────────────────────────── */
+    .study-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .study-progress-bar {
+      height: 4px; background: var(--bg3); border-radius: 2px; margin-bottom: 24px;
+    }
+    .study-progress-fill {
+      height: 100%; border-radius: 2px; background: var(--water);
+      transition: width 0.3s ease;
+    }
+
+    /* Flashcard */
+    .flashcard-wrap { perspective: 1200px; }
+    .flashcard {
+      width: 100%; min-height: 280px;
+      position: relative; cursor: pointer;
+    }
+    .flashcard-inner {
+      width: 100%; min-height: 280px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s ease;
+    }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back {
+      position: absolute; width: 100%; min-height: 280px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 18px; padding: 32px 28px;
+      display: flex; flex-direction: column; justify-content: center;
+      border: 2px solid var(--border);
+    }
+    .flashcard-front { background: var(--bg2); }
+    .flashcard-back  { background: var(--bg3); transform: rotateY(180deg); }
+
+    .card-cat-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      padding: 3px 10px; border-radius: 999px; margin-bottom: 18px; align-self: flex-start;
+    }
+    .flashcard-front .question-text {
+      font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 600; line-height: 1.55;
+    }
+    .flashcard-front .flip-hint {
+      margin-top: 24px; font-size: 0.75rem; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .answer-label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .answer-text {
+      font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; margin-bottom: 16px;
+    }
+    .explanation-text {
+      font-size: 0.85rem; color: var(--muted); line-height: 1.6;
+      border-top: 1px solid var(--border); padding-top: 14px; margin-top: 4px;
+    }
+
+    .study-actions {
+      display: flex; gap: 12px; margin-top: 22px;
+    }
+    .study-actions .btn { flex: 1; }
+    .btn-knew-it { background: var(--correct); color: #fff; }
+    .btn-review  { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+
+    .study-legend {
+      display: flex; gap: 16px; font-size: 0.78rem; color: var(--muted);
+      margin-top: 18px; align-items: center;
+    }
+    .legend-dot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px;
+    }
+
+    /* ─── TRIVIA SCREEN ──────────────────────────────── */
+    .trivia-hud {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; gap: 12px;
+    }
+    .hud-score {
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .hud-score span { font-weight: 700; color: var(--text); }
+    .hud-timer {
+      font-size: 1.1rem; font-weight: 800; min-width: 36px; text-align: center;
+    }
+    .hud-timer.warning { color: var(--fire); }
+    .hud-count { font-size: 0.85rem; color: var(--muted); }
+
+    .trivia-progress-bar {
+      height: 4px; background: var(--bg3); border-radius: 2px; margin-bottom: 24px;
+    }
+    .trivia-progress-fill {
+      height: 100%; border-radius: 2px; background: var(--fire);
+      transition: width 0.3s ease;
+    }
+
+    .trivia-card {
+      background: var(--bg2); border: 2px solid var(--border);
+      border-radius: 18px; padding: 30px 26px; margin-bottom: 20px;
+    }
+    .trivia-question {
+      font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 600; line-height: 1.6;
+    }
+
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 500px) { .choices { grid-template-columns: 1fr; } }
+
+    .choice-btn {
+      padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border);
+      background: var(--bg3); color: var(--text); font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; text-align: left; transition: all 0.14s;
+      display: flex; align-items: center; gap: 10px; line-height: 1.4;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: var(--water); background: #1c2f44; }
+    .choice-btn:disabled { cursor: default; }
+    .choice-btn.correct { border-color: var(--correct); background: #1b3a1f; color: #a5d6a7; }
+    .choice-btn.wrong   { border-color: var(--wrong);   background: #3a1b1b; color: #ef9a9a; }
+    .choice-btn.dim     { opacity: 0.4; }
+
+    .choice-letter {
+      display: flex; align-items: center; justify-content: center;
+      min-width: 28px; height: 28px; border-radius: 6px;
+      background: var(--border); font-size: 0.8rem; font-weight: 700;
+    }
+
+    .trivia-feedback {
+      font-size: 0.85rem; color: var(--muted); text-align: center;
+      min-height: 20px; margin-bottom: 12px;
+    }
+    .trivia-feedback.correct-msg { color: var(--correct); font-weight: 600; }
+    .trivia-feedback.wrong-msg   { color: var(--fire);    font-weight: 600; }
+
+    .next-btn-wrap { text-align: center; }
+
+    /* ─── RESULTS SCREEN ─────────────────────────────── */
+    .results-hero {
+      text-align: center; padding: 32px 0 24px;
+    }
+    .results-score-ring {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 140px; height: 140px; border-radius: 50%;
+      border: 5px solid var(--water); font-size: 2.2rem; font-weight: 900;
+      margin: 16px auto; background: var(--bg2);
+    }
+    .results-label { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+    .results-grade { font-size: 1.4rem; font-weight: 800; margin-top: 10px; }
+
+    .results-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      margin: 24px 0;
+    }
+    .stat-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px; text-align: center;
+    }
+    .stat-box .stat-num { font-size: 1.6rem; font-weight: 800; }
+    .stat-box .stat-lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
+
+    .missed-section { margin-top: 28px; }
+    .missed-section h3 { font-size: 1rem; margin-bottom: 12px; color: var(--muted); }
+    .missed-item {
+      background: var(--bg2); border-left: 3px solid var(--fire);
+      border-radius: 0 10px 10px 0; padding: 14px 16px; margin-bottom: 10px;
+    }
+    .missed-item .q { font-size: 0.88rem; margin-bottom: 6px; color: var(--muted); }
+    .missed-item .a { font-size: 0.92rem; font-weight: 600; color: var(--correct); }
+
+    .results-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+    .results-actions .btn { flex: 1; min-width: 140px; }
+
+    /* ─── UTILS ──────────────────────────────────────── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 0.85rem; cursor: pointer;
+      border: none; background: none; padding: 4px 0; margin-bottom: 20px;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    .section-title {
+      font-size: 1.5rem; font-weight: 800; margin-bottom: 6px;
+    }
+    .section-sub {
+      color: var(--muted); font-size: 0.85rem; margin-bottom: 24px;
+    }
+
+    .cat-color-gaang  { color: var(--gaang);  }
+    .cat-color-fire   { color: var(--fire);   }
+    .cat-color-water  { color: var(--water);  }
+    .cat-color-earth  { color: var(--earth);  }
+    .cat-color-bending{ color: var(--air);    }
+    .cat-color-spirits{ color: var(--spirit); }
+    .cat-color-story  { color: var(--story);  }
+
+    .badge-gaang  { background: var(--gaang);  color: #111; }
+    .badge-fire   { background: var(--fire);   color: #fff; }
+    .badge-water  { background: var(--water);  color: #0a0e1a; }
+    .badge-earth  { background: var(--earth);  color: #111; }
+    .badge-bending{ background: var(--air);    color: #111; }
+    .badge-spirits{ background: var(--spirit); color: #111; }
+    .badge-story  { background: var(--story);  color: #111; }
+
+    .empty-msg {
+      text-align: center; color: var(--muted); padding: 40px 0; font-size: 0.9rem;
+    }
+
+    .confetti-anim {
+      animation: pop 0.4s ease;
+    }
+    @keyframes pop {
+      0%   { transform: scale(0.7); opacity: 0; }
+      60%  { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <span class="air">🌬</span>
+    Avatar: The Last Airbender
+    <span class="fire">🔥</span>
+  </h1>
+  <p>Trivia &amp; Study — How well do you know the show?</p>
+</header>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- HOME SCREEN                                        -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="home" class="screen active">
+  <div style="text-align:center; padding: 12px 0 28px;">
+    <div style="font-size:3.5rem;">🌊🌿🔥💨</div>
+    <div style="margin-top:12px; color:var(--muted); font-size:0.9rem;">
+      60 niche questions across 7 categories
+    </div>
+  </div>
+
+  <div class="mode-cards">
+    <div class="mode-card" id="home-study-btn">
+      <div class="icon">📖</div>
+      <h2>Study Mode</h2>
+      <p>Flashcards — read the question, reveal the answer, track what you know</p>
+    </div>
+    <div class="mode-card" id="home-trivia-btn">
+      <div class="icon">⚡</div>
+      <h2>Trivia Game</h2>
+      <p>Multiple choice with a 30-second timer. See how many you can get right</p>
+    </div>
+  </div>
+
+  <div class="cat-label">Filter by category</div>
+  <div class="chips" id="home-chips">
+    <div class="chip selected" data-cat="all">All (60)</div>
+    <div class="chip" data-cat="gaang">Team Avatar</div>
+    <div class="chip" data-cat="fire">Fire Nation</div>
+    <div class="chip" data-cat="water">Water Tribes</div>
+    <div class="chip" data-cat="earth">Earth Kingdom</div>
+    <div class="chip" data-cat="bending">Bending & Techniques</div>
+    <div class="chip" data-cat="spirits">Spirits & Lore</div>
+    <div class="chip" data-cat="story">Episodes & Story</div>
+  </div>
+
+  <div style="text-align:center; color:var(--muted); font-size:0.78rem; margin-top:8px;">
+    Tip: select a category above, then choose your mode
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- STUDY SCREEN                                       -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="study" class="screen">
+  <button class="back-btn" id="study-back">← Back</button>
+
+  <div class="study-meta">
+    <div>
+      <span style="font-weight:700;" id="study-card-num">1</span>
+      <span style="color:var(--muted);"> / </span>
+      <span id="study-card-total">60</span>
+    </div>
+    <div class="study-legend">
+      <span><span class="legend-dot" style="background:var(--correct)"></span>Known: <span id="study-known-count">0</span></span>
+      <span><span class="legend-dot" style="background:var(--fire)"></span>Review: <span id="study-review-count">0</span></span>
+    </div>
+  </div>
+
+  <div class="study-progress-bar">
+    <div class="study-progress-fill" id="study-prog" style="width:0%"></div>
+  </div>
+
+  <div class="flashcard-wrap">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <span class="card-cat-badge" id="study-badge"></span>
+          <div class="question-text" id="study-question"></div>
+          <div class="flip-hint">👆 Click to reveal answer</div>
+        </div>
+        <div class="flashcard-back">
+          <span class="card-cat-badge" id="study-badge-back"></span>
+          <div class="answer-label">Answer</div>
+          <div class="answer-text" id="study-answer"></div>
+          <div class="explanation-text" id="study-explanation"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="study-actions" id="study-actions" style="display:none; margin-top:22px;">
+    <button class="btn btn-review" onclick="studyMark(false)">🔄 Study Again</button>
+    <button class="btn btn-knew-it" onclick="studyMark(true)">✓ Got It!</button>
+  </div>
+
+  <div style="text-align:center; margin-top:20px;">
+    <button class="btn btn-secondary btn-sm" onclick="studyShuffleAll()">🔀 Shuffle</button>
+    <button class="btn btn-secondary btn-sm" style="margin-left:8px" onclick="studyReviewOnly()">📌 Review Only</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- TRIVIA SCREEN                                      -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="trivia" class="screen">
+  <button class="back-btn" id="trivia-back">← Back</button>
+
+  <div class="trivia-hud">
+    <div class="hud-count" id="trivia-count">Q 1 / 60</div>
+    <div class="hud-timer" id="trivia-timer">30</div>
+    <div class="hud-score">Score: <span id="trivia-score">0</span></div>
+  </div>
+
+  <div class="trivia-progress-bar">
+    <div class="trivia-progress-fill" id="trivia-prog" style="width:0%"></div>
+  </div>
+
+  <div class="trivia-card">
+    <span class="card-cat-badge" id="trivia-badge"></span>
+    <div class="trivia-question" id="trivia-question" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="choices" id="trivia-choices"></div>
+
+  <div class="trivia-feedback" id="trivia-feedback"></div>
+
+  <div class="next-btn-wrap">
+    <button class="btn btn-primary" id="trivia-next" style="display:none;" onclick="triviaNext()">
+      Next Question →
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- RESULTS SCREEN                                     -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="results" class="screen">
+  <div class="results-hero">
+    <div style="font-size:0.85rem; color:var(--muted);">TRIVIA COMPLETE</div>
+    <div class="results-score-ring confetti-anim" id="res-ring">0/0</div>
+    <div class="results-label">questions correct</div>
+    <div class="results-grade" id="res-grade"></div>
+  </div>
+
+  <div class="results-stats">
+    <div class="stat-box">
+      <div class="stat-num" id="res-correct">0</div>
+      <div class="stat-lbl">Correct</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="res-missed">0</div>
+      <div class="stat-lbl">Missed</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="res-pct">0%</div>
+      <div class="stat-lbl">Accuracy</div>
+    </div>
+  </div>
+
+  <div class="missed-section" id="res-missed-section"></div>
+
+  <div class="results-actions">
+    <button class="btn btn-secondary" onclick="showHome()">🏠 Home</button>
+    <button class="btn btn-primary" onclick="triviaRestart()">↩ Play Again</button>
+    <button class="btn btn-secondary" onclick="goStudyMissed()">📖 Study Missed</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// QUESTION DATA
+// ══════════════════════════════════════════════════════════════
+const ALL_QUESTIONS = [
+  // ── TEAM AVATAR ─────────────────────────────────────────────
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What is the name of Aang's flying bison?",
+    a: "Appa",
+    choices: ["Appa", "Momo", "Flopsy", "Bison"],
+    explain: "Appa is a sky bison — the last of his kind alongside Aang — and is as much a member of Team Avatar as anyone."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What color are Aang's airbending tattoos, and what do they signify?",
+    a: "Blue; they mark him as an airbending master",
+    choices: ["Blue; they mark him as an airbending master","Orange; they're a symbol of the Air Nomads","White; they show he is the Avatar","Silver; they were given at birth"],
+    explain: "The blue arrow tattoos on Aang's head, hands, and feet indicate he achieved mastery of airbending — a tradition of the Air Nomads."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "At which Air Temple was Aang raised by Monk Gyatso?",
+    a: "Southern Air Temple",
+    choices: ["Southern Air Temple","Northern Air Temple","Eastern Air Temple","Western Air Temple"],
+    explain: "Aang was raised at the Southern Air Temple in the mountains. It is the first Air Nomad ruin Team Avatar visits in Book 1."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What is the name of Katara and Sokka's father?",
+    a: "Hakoda",
+    choices: ["Hakoda","Bato","Arnook","Pakku"],
+    explain: "Chief Hakoda led the Southern Water Tribe warriors in attacks on the Fire Nation. Bato was his close friend and a fellow warrior."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What rare technique does Katara discover she can perform on the night of the full moon?",
+    a: "Bloodbending",
+    choices: ["Bloodbending","Healing in battle","Spiritbending","Ice construction"],
+    explain: "In 'The Puppetmaster,' Hama reveals that the full moon amplifies waterbending enough to move the water inside living creatures — bloodbending."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "Who carved Katara's Water Tribe betrothal necklace, and for whom?",
+    a: "Master Pakku, for Katara's grandmother Kanna (Gran Gran)",
+    choices: ["Master Pakku, for Katara's grandmother Kanna (Gran Gran)","Katara's father Hakoda, for her mother Kya","Katara's mother Kya made it herself","A Fire Nation trader sold it to the tribe"],
+    explain: "Pakku carved the necklace for Kanna, who later fled to the South Pole to escape an arranged marriage. Katara inherited it from Gran Gran."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What animal companion does Team Avatar keep alongside Appa?",
+    a: "Momo, a winged lemur",
+    choices: ["Momo, a winged lemur","A flying squirrel named Pipsqueak","A badgermole named Stony","A red-tailed hawk named Arrow"],
+    explain: "Momo is a winged lemur Aang found at the Southern Air Temple — the species was thought to be extinct like the sky bison."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What iconic weapon does Sokka always have with him from the very first episode?",
+    a: "His boomerang",
+    choices: ["His boomerang","A spear","A club","His space sword"],
+    explain: "Sokka's boomerang is his signature weapon throughout the entire series and memorably returns to him at the most dramatic moments."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "What is the name Aang uses as his undercover identity while attending a Fire Nation school?",
+    a: "Kuzon",
+    choices: ["Kuzon","Lee","Hotaru","Kenji"],
+    explain: "In 'The Headband,' Aang goes by Kuzon — the name of a Fire Nation friend Aang had over a hundred years ago."
+  },
+  {
+    cat: "gaang", catName: "Team Avatar",
+    q: "Who teaches Aang earthbending, and what unique ability does she have?",
+    a: "Toph Beifong, who is blind and uses her feet to 'see' via seismic sense",
+    choices: ["Toph Beifong, who is blind and uses her feet to 'see' via seismic sense","King Bumi, who uses chi-enhanced vision","The Boulder, who trained in the spirit world","A badgermole Aang befriended in the tunnels of Omashu"],
+    explain: "Toph is blind since birth and developed seismic sense to perceive the world through vibrations — making her one of the greatest earthbenders alive."
+  },
+
+  // ── FIRE NATION ─────────────────────────────────────────────
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What title does Fire Lord Ozai give himself just before the final battle?",
+    a: "Phoenix King",
+    choices: ["Phoenix King","Dragon Emperor","Sun Sovereign","Supreme Firelord"],
+    explain: "Ozai crowns himself 'Phoenix King' in a ceremony before attempting to use Sozin's Comet to burn down the Earth Kingdom."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What is distinctive about Azula's firebending compared to other firebenders?",
+    a: "Her fire burns blue instead of orange",
+    choices: ["Her fire burns blue instead of orange","She bends fire with only her mind","She creates invisible fire","She needs no emotion to generate fire"],
+    explain: "Azula's blue fire is hotter and more powerful than normal fire, and reflects her exceptional precision and control over the element."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What was the scar on Zuko's face caused by?",
+    a: "An Agni Kai against his father, Fire Lord Ozai",
+    choices: ["An Agni Kai against his father, Fire Lord Ozai","A battle wound from chasing the Avatar","A training accident at the Fire Nation academy","An Agni Kai against Admiral Zhao"],
+    explain: "Zuko spoke out of turn at a war meeting, was forced into an Agni Kai, refused to fight his father, and Ozai burned him as punishment — and as a lesson."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What is the name of Zuko's masked vigilante alter ego?",
+    a: "The Blue Spirit",
+    choices: ["The Blue Spirit","The Red Shadow","The Iron Mask","The Dark Flame"],
+    explain: "Zuko wore the mask of the Blue Spirit — stolen from a pair of swords warriors — to rescue Aang from Admiral Zhao without revealing his identity."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What is the name of Iroh's son who died in battle at Ba Sing Se?",
+    a: "Lu Ten",
+    choices: ["Lu Ten","Wei Jin","Bao","Shoji"],
+    explain: "Lu Ten's death at the Siege of Ba Sing Se was the turning point that broke Iroh — and that failure led to Ozai seizing power from him."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What did Iroh name his tea shop in Ba Sing Se?",
+    a: "The Jasmine Dragon",
+    choices: ["The Jasmine Dragon","The Golden Leaf","The Dragon's Brew","The Ember Cup"],
+    explain: "Iroh fulfilled his dream of running a tea shop under the name 'The Jasmine Dragon' while hiding in the Lower Ring of Ba Sing Se."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "Who are the two girls that travel with Azula on her mission to capture Zuko and Iroh?",
+    a: "Mai and Ty Lee",
+    choices: ["Mai and Ty Lee","Suki and Ming","Jin and Joo Dee","Song and On Ji"],
+    explain: "Mai is a weapons-wielding girl who grew up alongside Azula, and Ty Lee is an acrobat and chi-blocker — both were childhood friends of Azula."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What is Ty Lee's special combat technique that neutralizes benders?",
+    a: "Chi blocking — striking pressure points to disable a bender's chi flow",
+    choices: ["Chi blocking — striking pressure points to disable a bender's chi flow","A nerve pinch learned from the circus","Bloodbending learned in secret","A form of earthbending disguised as acrobatics"],
+    explain: "Ty Lee studied acrobatics and chi blocking, letting her neutralize even the most powerful benders by cutting off their chi paths with precise jabs."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "Who were Iroh and Ozai's father — i.e., who was the Fire Lord before Ozai?",
+    a: "Fire Lord Azulon",
+    choices: ["Fire Lord Azulon","Fire Lord Sozin","Fire Lord Roku","Fire Lord Zirin"],
+    explain: "The Fire Lord lineage is: Sozin → Azulon → Ozai (after Iroh was passed over). Azulon ordered the conquest that led to his own death."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "How did Fire Lord Azulon die, and who was responsible?",
+    a: "He was poisoned by Ursa, acting to protect Zuko from Azulon's order to kill him",
+    choices: ["He was poisoned by Ursa, acting to protect Zuko from Azulon's order to kill him","He was killed in battle at Ba Sing Se","He died of old age peacefully","He was assassinated by the Order of the White Lotus"],
+    explain: "Ozai wanted the throne; Azulon ordered him to kill Zuko as punishment. Ursa made a deal — her freedom in exchange for Azulon's poison — saving Zuko."
+  },
+  {
+    cat: "fire", catName: "Fire Nation",
+    q: "What is the play that dramatizes (and mocks) Team Avatar's adventures, performed in the Fire Nation?",
+    a: "\"The Boy in the Iceberg\" by the Ember Island Players",
+    choices: ["\"The Boy in the Iceberg\" by the Ember Island Players","\"The Last Airbender\" by the Caldera Theatre","\"Fire and Ice\" — a royal commission","\"The Blue Spirit's Journey\" by anonymous playwrights"],
+    explain: "In 'The Ember Island Players,' the gang watches a Fire Nation propaganda play that hilariously misrepresents their whole journey."
+  },
+
+  // ── WATER TRIBES ────────────────────────────────────────────
+  {
+    cat: "water", catName: "Water Tribes",
+    q: "What are the names of the Ocean and Moon spirits in the Northern Water Tribe?",
+    a: "Tui (moon) and La (ocean)",
+    choices: ["Tui (moon) and La (ocean)","Yue and Aang","Agni and Tui","Koh and La"],
+    explain: "In the North Pole's spirit oasis, the Moon Spirit (Tui) and Ocean Spirit (La) take the form of two koi fish swimming in eternal balance."
+  },
+  {
+    cat: "water", catName: "Water Tribes",
+    q: "What sacrifice does Princess Yue make at the end of 'The Siege of the North'?",
+    a: "She gives her life to restore Tui, the Moon Spirit, that Admiral Zhao killed",
+    choices: ["She gives her life to restore Tui, the Moon Spirit, that Admiral Zhao killed","She leaves Sokka to marry another prince","She jumps into the ocean to seal a breach in the wall","She channels Aang's Avatar State to stop the spirit attack"],
+    explain: "Yue was given life by the Moon Spirit as a baby. When Zhao kills Tui, she sacrifices herself to return that life force, becoming the new Moon Spirit."
+  },
+  {
+    cat: "water", catName: "Water Tribes",
+    q: "Who killed the Moon Spirit (Tui) in the Northern Water Tribe?",
+    a: "Admiral Zhao",
+    choices: ["Admiral Zhao","Fire Lord Ozai","Azula","Zuko"],
+    explain: "Zhao captured and killed the koi fish that was the Moon Spirit's physical form, briefly extinguishing the moon and all waterbending — until Yue intervened."
+  },
+  {
+    cat: "water", catName: "Water Tribes",
+    q: "Who was Katara's waterbending master at the Northern Water Tribe?",
+    a: "Master Pakku",
+    choices: ["Master Pakku","Master Jeong Jeong","Master Piandao","Grand Master Arnook"],
+    explain: "Pakku initially refused to teach Katara because she was a girl, but after learning she had Kanna's necklace, he relented and trained her intensively."
+  },
+  {
+    cat: "water", catName: "Water Tribes",
+    q: "What tribe are Katara and Sokka from?",
+    a: "The Southern Water Tribe",
+    choices: ["The Southern Water Tribe","The Northern Water Tribe","A mixed colony on Kyoshi Island","The Foggy Swamp Tribe"],
+    explain: "They come from the Southern Water Tribe, which had been devastated by a century of Fire Nation raids — leaving almost no waterbenders."
+  },
+  {
+    cat: "water", catName: "Water Tribes",
+    q: "What creature lurks in the waters around Kyoshi Island?",
+    a: "The Unagi, a massive sea serpent",
+    choices: ["The Unagi, a massive sea serpent","A leviathan turtle","Whale sharks","La, the Ocean Spirit"],
+    explain: "The Unagi is a giant eel-like sea monster that patrols Kyoshi Island's waters. Aang famously rides it to put out the fires set by Zuko's attack."
+  },
+
+  // ── EARTH KINGDOM ───────────────────────────────────────────
+  {
+    cat: "earth", catName: "Earth Kingdom",
+    q: "What is the name of Ba Sing Se's Earth King?",
+    a: "King Kuei",
+    choices: ["King Kuei","King Bumi","King Fong","King Tong"],
+    explain: "King Kuei is a naive, sheltered ruler who is largely manipulated by Long Feng and the Dai Li — he didn't even know there was a war happening."
+  },
+  {
+    cat: "earth", catName: "Earth Kingdom",
+    q: "What unusual pet does the Earth King keep in his palace?",
+    a: "Bosco, a bear (not a spirit animal, just a bear)",
+    choices: ["Bosco, a bear (not a spirit animal, just a bear)","A lion turtle named Gao","A badgermole named Blind","A flying ostrich-horse"],
+    explain: "Bosco is a regular bear — and notably one of the few animals in the Avatar world that is just an animal, without a hybrid second species."
+  },
+  {
+    cat: "earth", catName: "Team Avatar",
+    q: "What city is Toph Beifong from?",
+    a: "Gaoling",
+    choices: ["Gaoling","Ba Sing Se","Omashu","Kyoshi Island"],
+    explain: "Toph is the daughter of the wealthy Beifong family in Gaoling. She secretly competed in underground earthbending tournaments as 'The Blind Bandit.'"
+  },
+  {
+    cat: "earth", catName: "Earth Kingdom",
+    q: "What was Toph's arena name in the underground earthbending tournament 'Earth Rumble VI'?",
+    a: "The Blind Bandit",
+    choices: ["The Blind Bandit","The Unmovable Rock","Iron Feet","The Earthshaker"],
+    explain: "Despite being small and blind, Toph dominated Earth Rumble VI as the Blind Bandit — defeating the much larger Boulder with ease."
+  },
+  {
+    cat: "earth", catName: "Earth Kingdom",
+    q: "What is the name of Toph's mother?",
+    a: "Poppy Beifong",
+    choices: ["Poppy Beifong","Kya Beifong","Lin Beifong","Ming Beifong"],
+    explain: "Poppy Beifong is Lao Beifong's wife. Both parents overprotected Toph due to her blindness, not knowing she was secretly one of the greatest earthbenders alive."
+  },
+  {
+    cat: "earth", catName: "Earth Kingdom",
+    q: "What organization controls Ba Sing Se's information and secretly answers to Long Feng?",
+    a: "The Dai Li",
+    choices: ["The Dai Li","The Earth Sages","The White Jade Council","The Ba Sing Se Guard"],
+    explain: "The Dai Li are Ba Sing Se's elite secret police. Founded by Avatar Kyoshi to protect the city's cultural heritage, they were corrupted by Long Feng."
+  },
+  {
+    cat: "earth", catName: "Earth Kingdom",
+    q: "What is the name of the great eccentricold king of Omashu, and his connection to Aang?",
+    a: "King Bumi — Aang's best friend from 100 years ago",
+    choices: ["King Bumi — Aang's best friend from 100 years ago","General Fong — Aang's earthbending teacher","Governor Ho Tun — a distant Air Nomad contact","Elder Bumi — a Water Tribe shaman"],
+    explain: "Bumi is the only person alive who knew Aang before he was frozen. He waited 100 years, choosing to be 'joyful and spontaneous' rather than despairing."
+  },
+
+  // ── BENDING & TECHNIQUES ────────────────────────────────────
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "Who invented metalbending, and how does it work?",
+    a: "Toph Beifong — by sensing and bending the impure earth within processed metal",
+    choices: ["Toph Beifong — by sensing and bending the impure earth within processed metal","The ancient Sun Warriors — passed down in secret","Hei Bai — taught to chosen earthbenders via spirit link","An unnamed Earth Kingdom general during the war"],
+    explain: "Toph realized that metal is just refined earth with small impurities. She can sense those particles and bend them, opening a new frontier of earthbending."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "Who invented the technique of redirecting lightning, and what philosophy inspired it?",
+    a: "Iroh — inspired by the circular movements of waterbending",
+    choices: ["Iroh — inspired by the circular movements of waterbending","Ozai — developed it as an offensive technique","Jeong Jeong — from years of pacifist study","The Sun Warriors — ancient firebending masters"],
+    explain: "Iroh studied waterbending's flowing, redirecting nature and realized fire could be treated similarly — accept the energy and guide it out of the body."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What animal do airbenders draw their inspiration from?",
+    a: "Sky bison",
+    choices: ["Sky bison","Winged lemur","Air buffalo","Dragonhawk"],
+    explain: "Sky bison were the first airbenders — Aang's arrow tattoos are modeled after the natural markings on sky bison."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What animal did the original earthbenders learn from?",
+    a: "Badgermoles",
+    choices: ["Badgermoles","Rock lions","Stone bears","Earth-crawlers"],
+    explain: "The badgermoles of the Cave of Two Lovers were the original earthbenders. The legend says Oma and Shu learned from them to reunite during the war."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What did the original human firebenders learn from?",
+    a: "The dragons",
+    choices: ["The dragons","The sun directly","The comet's energy","Ancient Fire Sages"],
+    explain: "Dragons were the original firebenders. When Zuko and Aang find the last two dragons (Ran and Shaw), they re-learn firebending from the source."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What are the names of the last two living dragons that teach Zuko and Aang the true source of firebending?",
+    a: "Ran and Shaw",
+    choices: ["Ran and Shaw","Fang and Cinder","Blaze and Ember","Drake and Scorch"],
+    explain: "Ran and Shaw — the last living dragons — showed Zuko and Aang that fire represents life and energy, not just destruction and rage."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What is Combustionbending, and who uses it against Team Avatar?",
+    a: "A rare technique that fires explosive blasts from a third-eye tattoo, used by the mercenary known as Combustion Man",
+    choices: ["A rare technique that fires explosive blasts from a third-eye tattoo, used by the mercenary known as Combustion Man","An ancient Fire Sage ritual using four firebenders","A form of lightning that Ozai uses in the final battle","Azula's ultimate technique using concentrated blue fire"],
+    explain: "Combustion Man (called Sparky Sparky Boom Man by Sokka) was a hired assassin. His unique ability could be disrupted by striking the tattoo on his forehead."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What element is considered the natural opposite to airbending in Avatar lore?",
+    a: "Earth",
+    choices: ["Earth","Fire","Water","Spirit"],
+    explain: "Toph points out that earth is the natural opposite of air — air is freedom and change, while earth is solidity and resistance. This is why Aang struggled most with earthbending."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What does Aang learn from the lion turtle that allows him to defeat Ozai without killing him?",
+    a: "Energybending — bending the life energy within a person to remove their bending",
+    choices: ["Energybending — bending the life energy within a person to remove their bending","A new form of airbending that seals bending permanently","A spirit world technique taught by Avatar Roku","Metalbending applied to spiritual chi pathways"],
+    explain: "Before the elements existed, people bent the energy within themselves. The lion turtle teaches Aang this ancient skill, letting him take Ozai's firebending."
+  },
+  {
+    cat: "bending", catName: "Bending & Techniques",
+    q: "What material is Sokka's famous sword made from, and who taught him to forge it?",
+    a: "A meteorite — forged with the help of Fire Nation master swordsman Piandao",
+    choices: ["A meteorite — forged with the help of Fire Nation master swordsman Piandao","Dragon steel from the Sun Warrior ruins","A Fire Nation military alloy stolen from a general","Platinum from a Ba Sing Se jeweler"],
+    explain: "Sokka and Piandao forged the sword from a fallen space meteorite. This is why the sword is black with a unique, smoky appearance."
+  },
+
+  // ── SPIRITS & LORE ───────────────────────────────────────────
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What is the name of the face-stealing spirit, and what is his one rule?",
+    a: "Koh the Face Stealer — show no emotion or he will steal your face",
+    choices: ["Koh the Face Stealer — show no emotion or he will steal your face","Wan Shi Tong — answer no questions incorrectly","Hei Bai — speak no words in his forest","The Mother of Faces — never lie about your name"],
+    explain: "Koh is an ancient, centipede-like spirit. Aang visits him to find the ocean and moon spirits, keeping a perfectly blank expression the entire time."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What is the name of the giant owl spirit who guards a massive library of knowledge?",
+    a: "Wan Shi Tong",
+    choices: ["Wan Shi Tong","Koh","Hei Bai","The Knowledge Seeker"],
+    explain: "Wan Shi Tong means 'He Who Knows Ten Thousand Things.' He shares knowledge freely — but becomes hostile when he suspects humans will use it for war."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What secret society does Iroh belong to, and what game serves as its symbol?",
+    a: "The Order of the White Lotus — members identify each other through Pai Sho",
+    choices: ["The Order of the White Lotus — members identify each other through Pai Sho","The Brotherhood of the White Dragon — members use a coded scroll language","The Circle of Balance — members use airbending signs as a greeting","The Dragon Society — identified by a red lotus tattoo"],
+    explain: "The White Lotus Pai Sho tile (a white lotus flower) is used as the opening move in a greeting game. Members span all nations, dedicated to peace and balance."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What does 'Agni Kai' translate to, and what are the rules?",
+    a: "A 'fire duel' — fought at sunset, combatants face away then turn and fight",
+    choices: ["A 'fire duel' — fought at sunset, combatants face away then turn and fight","A 'spirit battle' — fought inside a temple with witnesses","A 'test of honor' — one party challenges and the other selects weapons","A 'king's challenge' — only members of royalty may declare it"],
+    explain: "Agni Kai is a formal duel settled by firebending. Zuko's most pivotal Agni Kai moments were with Ozai (where he was scarred) and with Azula in the finale."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What is the name of Aang's past Avatar life who was a firebender and Fire Lord Sozin's best friend?",
+    a: "Avatar Roku",
+    choices: ["Avatar Roku","Avatar Sozin","Avatar Wan","Avatar Gyatso"],
+    explain: "Roku and Sozin were inseparable as young men. Their split over Sozin's imperial ambitions ultimately led to the war that would define the entire series."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What does Avatar Roku's dragon companion look like, and what is its name?",
+    a: "A large red dragon named Fang",
+    choices: ["A large red dragon named Fang","A blue dragon named Shard","A gold dragon named Ember","A white dragon named Blaze"],
+    explain: "Fang is Roku's loyal dragon companion and often appears alongside Roku in flashback sequences and spirit world visions."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What betrayal did Sozin commit that ultimately led to Roku's death?",
+    a: "He abandoned Roku on his volcanic island as it erupted, leaving him to die",
+    choices: ["He abandoned Roku on his volcanic island as it erupted, leaving him to die","He stole Roku's dragon and destroyed his temple","He had Roku declared a traitor and exiled","He poisoned Roku during a shared feast"],
+    explain: "Sozin had started to help Roku escape the eruption but saw his chance and flew away — allowing his old friend to die so the empire could expand unopposed."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "Who is the black-and-white panda bear spirit seen in the first season, and what causes its rage?",
+    a: "Hei Bai — a forest spirit that became destructive when humans burned its forest",
+    choices: ["Hei Bai — a forest spirit that became destructive when humans burned its forest","A shadow spirit sent by Koh as punishment","La, the ocean spirit, taking physical form on land","An ancient guardian of the Northern Air Temple"],
+    explain: "Hei Bai looks like a panda in its calm form but transforms into a monstrous multi-armed creature when enraged. Aang calms it by returning a kidnapped child."
+  },
+  {
+    cat: "spirits", catName: "Spirits & Lore",
+    q: "What is the name of the airbending Avatar who came just before Aang in the cycle?",
+    a: "Avatar Yangchen (airbender) — but the water Avatar immediately before Aang was Avatar Kuruk",
+    choices: ["Avatar Kuruk (waterbender) was the one directly before Aang","Avatar Yangchen (airbender) came directly before Aang","Avatar Kyoshi (earthbender) came directly before Aang","Avatar Szeto (firebender) came directly before Aang"],
+    explain: "The cycle goes Air→Water→Earth→Fire and repeats. Aang is an airbender, so the Avatar before him was the waterbender Kuruk, and before Kuruk was the airbender Yangchen."
+  },
+
+  // ── EPISODES & STORY ────────────────────────────────────────
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "Why was Aang frozen in the iceberg for 100 years?",
+    a: "He ran away from the Air Temples in fear of his Avatar responsibilities; a storm at sea caused him and Appa to crash, and Aang instinctively created a protective ice sphere",
+    choices: ["He ran away from the Air Temples in fear of his Avatar responsibilities; a storm at sea caused him and Appa to crash, and Aang instinctively created a protective ice sphere","He was captured by Fire Nation soldiers and sealed inside as a prison","He entered deep meditation in the spirit world and lost track of time","The Air Sages froze him to protect him from Fire Lord Sozin's purge"],
+    explain: "Burdened with the news of being the Avatar at age 12, Aang fled — only to be caught in a storm. His Avatar State subconsciously froze him in a protective state."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "What crucial piece of intelligence does Team Avatar find in Wan Shi Tong's library?",
+    a: "The date of the next Sozin's Comet — giving them a deadline to defeat the Fire Lord",
+    choices: ["The date of the next Sozin's Comet — giving them a deadline to defeat the Fire Lord","The location of the Fire Lord's secret underwater palace","A map of Fire Nation military encampments","The formula for creating the lightning that powered the drill at Ba Sing Se"],
+    explain: "Learning the comet's arrival date is the turning point of Book 2 — the gang now knows they have a fixed deadline before Ozai's power becomes unstoppable."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "Who was Aang's beloved mentor at the Southern Air Temple, and what happened to him?",
+    a: "Monk Gyatso — he was killed by Fire Nation soldiers during the Air Nomad genocide",
+    choices: ["Monk Gyatso — he was killed by Fire Nation soldiers during the Air Nomad genocide","Monk Pathik — he survived by hiding in the mountains for 100 years","Elder Tashi — he fled to the Northern Air Temple","Master Jinzuk — he became a prisoner of war in the Fire Nation"],
+    explain: "Aang finds Gyatso's skeleton surrounded by fallen Fire Nation soldiers — even in death, Gyatso fought to protect his students."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "Who teaches Aang about the seven chakras, and what must Aang sacrifice to open the final one?",
+    a: "Guru Pathik — Aang must let go of his attachment to Katara",
+    choices: ["Guru Pathik — Aang must let go of his attachment to Katara","Monk Gyatso — Aang must forgive Ozai","The lion turtle — Aang must release his fear of death","Avatar Roku — Aang must accept the cycle of rebirth"],
+    explain: "Pathik tells Aang the final chakra (Thought/Cosmic Energy) requires releasing attachment. Aang refuses — and chooses to save Katara over unlocking the Avatar State."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "In which episode does Zuko permanently join Team Avatar, and what does he say to convince Aang?",
+    a: "\"The Western Air Temple\" — Zuko offers to teach Aang firebending and proves himself with actions over time",
+    choices: ["\"The Western Air Temple\" — Zuko offers to teach Aang firebending and proves himself with actions over time","\"The Firebending Masters\" — Zuko teaches Aang after a test from the dragons","\"The Southern Raiders\" — Katara's forgiveness prompts the whole team to accept him","\"Sozin's Comet Part 1\" — Zuko joins last-minute during the evacuation"],
+    explain: "Zuko's redemption arc is complete when he arrives at the Western Air Temple. The team is skeptical, but he persists — and earns their trust through the coming episodes."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "What is unusual about Smellerbee, a Freedom Fighter, that Iroh points out in Ba Sing Se?",
+    a: "Iroh mistakes Smellerbee for a boy; Smellerbee is actually a girl",
+    choices: ["Iroh mistakes Smellerbee for a boy; Smellerbee is actually a girl","Smellerbee has chi-blocking abilities like Ty Lee","Smellerbee is secretly a Dai Li agent","Smellerbee is a nonbender who can sense bending"],
+    explain: "In 'City of Walls and Secrets,' Iroh apologizes for mistaking Smellerbee's gender. She replies that it's why she changed her name — and Iroh warmly calls it a beautiful name."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "What happens to the cabbage merchant's cabbages throughout the series, and what is his name?",
+    a: "His cabbages are repeatedly destroyed in disasters — and he is never given a name, known only as 'the Cabbage Merchant'",
+    choices: ["His cabbages are repeatedly destroyed in disasters — and he is never given a name, known only as 'the Cabbage Merchant'","His name is Wang Cai and he eventually joins the Order of the White Lotus","His name is Cabby and he becomes a food vendor in Ba Sing Se","He is revealed as a Fire Nation spy named Guo in the final season"],
+    explain: "\"My cabbages!\" is one of the show's best running gags. The merchant's cart meets destruction in Omashu, Ba Sing Se, and beyond. His real name is never revealed in the show."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "What is the name and weapon of the Freedom Fighters' leader who appears in Book 1 and Book 2?",
+    a: "Jet — he fights with dual hook swords",
+    choices: ["Jet — he fights with dual hook swords","Smellerbee — she uses throwing knives","The Duke — he uses a slingshot","Longshot — he uses a longbow"],
+    explain: "Jet is a charismatic but morally compromised leader who would destroy a whole village to flood out Fire Nation soldiers. He reappears in Ba Sing Se, brainwashed by the Dai Li."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "In the 'Crossroads of Destiny' finale, Zuko makes a pivotal choice. What is it and why is it devastating?",
+    a: "Zuko sides with Azula over Aang and helps defeat the Avatar — seemingly killing him — choosing his home over his redemption",
+    choices: ["Zuko sides with Azula over Aang and helps defeat the Avatar — seemingly killing him — choosing his home over his redemption","Zuko kidnaps Katara as leverage against Aang","Zuko allows Azula to capture Iroh while he escapes","Zuko destroys Team Avatar's supply ship to strand them in Ba Sing Se"],
+    explain: "Just as Zuko was about to help Aang, Azula offers him his old life back. He chooses that — striking Aang with lightning. It is later called 'the worst mistake of his life.'"
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "What is the name of the comet that amplifies firebending, and after whom is it named?",
+    a: "Sozin's Comet — named after Fire Lord Sozin, who used it to destroy the Air Nomads",
+    choices: ["Sozin's Comet — named after Fire Lord Sozin, who used it to destroy the Air Nomads","Azulon's Comet — named after the second Fire Lord","The Phoenix Comet — named for the Fire Nation's symbol","Roku's Comet — named after the Avatar who failed to stop the war"],
+    explain: "100 years before the show begins, Sozin used the comet's power to wipe out the Air Nomads in a single day — killing the Avatar cycle at its source."
+  },
+  {
+    cat: "story", catName: "Episodes & Story",
+    q: "How does the series finale resolve Aang's conflict of killing Ozai vs. his Air Nomad values?",
+    a: "Aang uses energybending — learned from the lion turtle — to take Ozai's firebending away without killing him",
+    choices: ["Aang uses energybending — learned from the lion turtle — to take Ozai's firebending away without killing him","Aang enters the Avatar State and overpowers Ozai into surrender","Aang traps Ozai inside a stone prison using earthbending from Toph","Zuko defeats Ozai in an Agni Kai while Aang holds off Azula"],
+    explain: "The lion turtle's gift of energybending gave Aang a third option — not surrendering his values, not ignoring the threat. He takes Ozai's power instead of his life."
+  }
+];
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let selectedCat = "all";
+let studyDeck    = [];
+let studyIndex   = 0;
+let studyKnown   = new Set();
+let studyReview  = new Set();
+let studyFlipped = false;
+
+let triviaDeck    = [];
+let triviaIndex   = 0;
+let triviaScore   = 0;
+let triviaWrong   = [];
+let triviaTimer   = null;
+let triviaTimeLeft= 30;
+let triviaAnswered= false;
+
+// ══════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+const catColors = {
+  gaang:   "var(--gaang)",
+  fire:    "var(--fire)",
+  water:   "var(--water)",
+  earth:   "var(--earth)",
+  bending: "var(--air)",
+  spirits: "var(--spirit)",
+  story:   "var(--story)"
+};
+
+const catNames = {
+  all:     "All Questions",
+  gaang:   "Team Avatar",
+  fire:    "Fire Nation",
+  water:   "Water Tribes",
+  earth:   "Earth Kingdom",
+  bending: "Bending & Techniques",
+  spirits: "Spirits & Lore",
+  story:   "Episodes & Story"
+};
+
+function getFiltered() {
+  if (selectedCat === "all") return [...ALL_QUESTIONS];
+  return ALL_QUESTIONS.filter(q => q.cat === selectedCat);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function grade(pct) {
+  if (pct >= 95) return "🏆 Avatar Level Mastery!";
+  if (pct >= 80) return "⚡ Master Bender";
+  if (pct >= 65) return "🔥 Fire-Tested Warrior";
+  if (pct >= 50) return "🌿 Earth Kingdom Recruit";
+  if (pct >= 35) return "💧 Beginning Waterbender";
+  return "🌬 Air Nomad Apprentice";
+}
+
+// ══════════════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════════════
+function showHome() {
+  stopTimer();
+  showScreen("home");
+  updateChipCounts();
+}
+
+function updateChipCounts() {
+  const chips = document.querySelectorAll("#home-chips .chip");
+  chips.forEach(chip => {
+    const cat = chip.dataset.cat;
+    const count = cat === "all" ? ALL_QUESTIONS.length : ALL_QUESTIONS.filter(q => q.cat === cat).length;
+    chip.textContent = `${catNames[cat]} (${count})`;
+  });
+}
+
+document.querySelectorAll("#home-chips .chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll("#home-chips .chip").forEach(c => c.classList.remove("selected"));
+    chip.classList.add("selected");
+    selectedCat = chip.dataset.cat;
+  });
+});
+
+document.getElementById("home-study-btn").addEventListener("click", startStudy);
+document.getElementById("home-trivia-btn").addEventListener("click", startTrivia);
+
+// ══════════════════════════════════════════════════════════════
+// STUDY MODE
+// ══════════════════════════════════════════════════════════════
+function startStudy() {
+  studyDeck = shuffle(getFiltered());
+  studyIndex = 0;
+  studyKnown = new Set();
+  studyReview = new Set();
+  studyDeck.forEach((_, i) => studyReview.add(i));
+  showScreen("study");
+  renderStudyCard();
+}
+
+function renderStudyCard() {
+  const card = studyDeck[studyIndex];
+  if (!card) { showStudyComplete(); return; }
+
+  studyFlipped = false;
+  const fc = document.getElementById("flashcard");
+  fc.classList.remove("flipped");
+
+  const total = studyDeck.length;
+  const color = catColors[card.cat] || "var(--muted)";
+
+  document.getElementById("study-card-num").textContent = studyIndex + 1;
+  document.getElementById("study-card-total").textContent = total;
+  document.getElementById("study-prog").style.width = `${(studyIndex / total) * 100}%`;
+
+  document.getElementById("study-known-count").textContent = studyKnown.size;
+  document.getElementById("study-review-count").textContent = studyDeck.length - studyKnown.size;
+
+  const badgeClass = `badge-${card.cat}`;
+  document.getElementById("study-badge").textContent = card.catName;
+  document.getElementById("study-badge").className = `card-cat-badge ${badgeClass}`;
+  document.getElementById("study-badge-back").textContent = card.catName;
+  document.getElementById("study-badge-back").className = `card-cat-badge ${badgeClass}`;
+
+  document.getElementById("study-question").textContent = card.q;
+  document.getElementById("study-answer").textContent = card.a;
+  document.getElementById("study-explanation").textContent = card.explain || "";
+
+  document.getElementById("study-actions").style.display = "none";
+}
+
+function flipCard() {
+  if (studyFlipped) return;
+  studyFlipped = true;
+  document.getElementById("flashcard").classList.add("flipped");
+  document.getElementById("study-actions").style.display = "flex";
+}
+
+function studyMark(knew) {
+  if (knew) {
+    studyKnown.add(studyIndex);
+    studyReview.delete(studyIndex);
+  } else {
+    studyKnown.delete(studyIndex);
+    studyReview.add(studyIndex);
+  }
+  studyIndex++;
+  if (studyIndex >= studyDeck.length) {
+    showStudyComplete();
+  } else {
+    renderStudyCard();
+  }
+}
+
+function studyShuffleAll() {
+  studyDeck = shuffle(getFiltered());
+  studyIndex = 0;
+  studyKnown = new Set();
+  studyReview = new Set();
+  studyDeck.forEach((_, i) => studyReview.add(i));
+  renderStudyCard();
+}
+
+function studyReviewOnly() {
+  const reviewCards = studyDeck.filter((_, i) => !studyKnown.has(i));
+  if (reviewCards.length === 0) {
+    alert("You've marked all cards as known! Shuffle to start fresh.");
+    return;
+  }
+  studyDeck = shuffle(reviewCards);
+  studyIndex = 0;
+  studyKnown = new Set();
+  studyReview = new Set();
+  studyDeck.forEach((_, i) => studyReview.add(i));
+  renderStudyCard();
+}
+
+function showStudyComplete() {
+  const total = studyDeck.length;
+  const known = studyKnown.size;
+  document.getElementById("study-card-num").textContent = total;
+  document.getElementById("study-prog").style.width = "100%";
+  document.getElementById("study-known-count").textContent = known;
+  document.getElementById("study-review-count").textContent = total - known;
+
+  document.getElementById("flashcard").classList.remove("flipped");
+  studyFlipped = false;
+  document.getElementById("study-question").textContent = `✓ Deck complete! ${known}/${total} marked as known.`;
+  document.getElementById("study-answer").textContent = known === total ? "Perfect — you know them all!" : `${total - known} card(s) still need review.`;
+  document.getElementById("study-explanation").textContent = "Use 'Review Only' to focus on what you missed, or 'Shuffle' to restart.";
+  document.getElementById("study-badge").textContent = "Complete";
+  document.getElementById("study-badge").className = "card-cat-badge";
+  document.getElementById("study-badge").style.background = "var(--correct)";
+  document.getElementById("study-badge").style.color = "#111";
+  document.getElementById("study-actions").style.display = "none";
+}
+
+document.getElementById("study-back").addEventListener("click", showHome);
+
+// ══════════════════════════════════════════════════════════════
+// TRIVIA MODE
+// ══════════════════════════════════════════════════════════════
+function startTrivia() {
+  triviaDeck = shuffle(getFiltered());
+  triviaIndex = 0;
+  triviaScore = 0;
+  triviaWrong = [];
+  showScreen("trivia");
+  renderTriviaQuestion();
+}
+
+function triviaRestart() {
+  startTrivia();
+}
+
+function renderTriviaQuestion() {
+  const q = triviaDeck[triviaIndex];
+  if (!q) { showResults(); return; }
+
+  triviaAnswered = false;
+  const total = triviaDeck.length;
+
+  document.getElementById("trivia-count").textContent = `Q ${triviaIndex + 1} / ${total}`;
+  document.getElementById("trivia-score").textContent = triviaScore;
+  document.getElementById("trivia-prog").style.width = `${(triviaIndex / total) * 100}%`;
+  document.getElementById("trivia-feedback").textContent = "";
+  document.getElementById("trivia-feedback").className = "trivia-feedback";
+  document.getElementById("trivia-next").style.display = "none";
+
+  const badgeClass = `badge-${q.cat}`;
+  document.getElementById("trivia-badge").textContent = q.catName;
+  document.getElementById("trivia-badge").className = `card-cat-badge ${badgeClass}`;
+  document.getElementById("trivia-question").textContent = q.q;
+
+  const shuffledChoices = shuffle(q.choices);
+  const choiceContainer = document.getElementById("trivia-choices");
+  choiceContainer.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+  shuffledChoices.forEach((choice, i) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span>${choice}`;
+    btn.addEventListener("click", () => answerTrivia(choice, q.a, btn, shuffledChoices));
+    choiceContainer.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function answerTrivia(selected, correct, btn, allChoices) {
+  if (triviaAnswered) return;
+  triviaAnswered = true;
+  stopTimer();
+
+  const isCorrect = selected === correct;
+  if (isCorrect) {
+    triviaScore++;
+    document.getElementById("trivia-score").textContent = triviaScore;
+    document.getElementById("trivia-feedback").textContent = "✓ Correct!";
+    document.getElementById("trivia-feedback").className = "trivia-feedback correct-msg";
+    btn.classList.add("correct");
+  } else {
+    triviaWrong.push({ q: triviaDeck[triviaIndex].q, a: correct });
+    document.getElementById("trivia-feedback").textContent = `✗ The answer was: ${correct}`;
+    document.getElementById("trivia-feedback").className = "trivia-feedback wrong-msg";
+    btn.classList.add("wrong");
+    // highlight correct answer
+    document.querySelectorAll(".choice-btn").forEach(b => {
+      const bText = b.textContent.slice(1).trim(); // remove letter prefix
+      if (b.textContent.includes(correct)) b.classList.add("correct");
+      else if (b !== btn) b.classList.add("dim");
+    });
+  }
+
+  document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
+  document.getElementById("trivia-next").style.display = "inline-flex";
+}
+
+function triviaNext() {
+  triviaIndex++;
+  renderTriviaQuestion();
+}
+
+function startTimer() {
+  triviaTimeLeft = 30;
+  const timerEl = document.getElementById("trivia-timer");
+  timerEl.textContent = triviaTimeLeft;
+  timerEl.className = "hud-timer";
+
+  clearInterval(triviaTimer);
+  triviaTimer = setInterval(() => {
+    triviaTimeLeft--;
+    timerEl.textContent = triviaTimeLeft;
+    if (triviaTimeLeft <= 10) timerEl.className = "hud-timer warning";
+    if (triviaTimeLeft <= 0) {
+      stopTimer();
+      if (!triviaAnswered) {
+        triviaAnswered = true;
+        triviaWrong.push({ q: triviaDeck[triviaIndex].q, a: triviaDeck[triviaIndex].a });
+        document.getElementById("trivia-feedback").textContent = `⏱ Time's up! Answer: ${triviaDeck[triviaIndex].a}`;
+        document.getElementById("trivia-feedback").className = "trivia-feedback wrong-msg";
+        document.querySelectorAll(".choice-btn").forEach(b => {
+          b.disabled = true;
+          if (b.textContent.includes(triviaDeck[triviaIndex].a)) b.classList.add("correct");
+          else b.classList.add("dim");
+        });
+        document.getElementById("trivia-next").style.display = "inline-flex";
+      }
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(triviaTimer);
+  triviaTimer = null;
+}
+
+document.getElementById("trivia-back").addEventListener("click", () => {
+  stopTimer();
+  showHome();
+});
+
+// ══════════════════════════════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  const total = triviaDeck.length;
+  const correct = triviaScore;
+  const missed = total - correct;
+  const pct = Math.round((correct / total) * 100);
+
+  document.getElementById("res-ring").textContent = `${correct}/${total}`;
+  document.getElementById("res-correct").textContent = correct;
+  document.getElementById("res-missed").textContent = missed;
+  document.getElementById("res-pct").textContent = `${pct}%`;
+  document.getElementById("res-grade").textContent = grade(pct);
+
+  const sec = document.getElementById("res-missed-section");
+  if (triviaWrong.length > 0) {
+    sec.innerHTML = `<h3>Questions to Review (${triviaWrong.length})</h3>` +
+      triviaWrong.map(w =>
+        `<div class="missed-item">
+          <div class="q">${w.q}</div>
+          <div class="a">✓ ${w.a}</div>
+        </div>`
+      ).join("");
+  } else {
+    sec.innerHTML = `<div style="text-align:center;color:var(--correct);font-size:1.1rem;margin-top:24px;">🎉 Perfect score! You know this show cold.</div>`;
+  }
+
+  showScreen("results");
+}
+
+function goStudyMissed() {
+  if (triviaWrong.length === 0) { showHome(); return; }
+  const missedQuestions = triviaWrong.map(w =>
+    ALL_QUESTIONS.find(q => q.q === w.q)
+  ).filter(Boolean);
+
+  studyDeck = shuffle(missedQuestions);
+  studyIndex = 0;
+  studyKnown = new Set();
+  studyReview = new Set();
+  studyDeck.forEach((_, i) => studyReview.add(i));
+  showScreen("study");
+  renderStudyCard();
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+updateChipCounts();
+</script>
+</body>
+</html>
