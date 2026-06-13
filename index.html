@@ -7,33 +7,41 @@
   <style>
     :root {
       color-scheme: light dark;
-      --bg:      #ABABAB;
-      --win:     #DEDEDE;
-      --surface: #FFFFFF;
-      --btn:     #D0D0D0;
-      --border:  #888888;
-      --text:    #000000;
-      --muted:   #555555;
-      --accent:  #0047B3;
-      --acc-txt: #FFFFFF;
-      --inset:   #C0C0C0;
-      --prog:    #0047B3;
-      --div:     #AAAAAA;
+      --bg:        #ABABAB;
+      --win:       #DEDEDE;
+      --surface:   #FFFFFF;
+      --btn:       #D0D0D0;
+      --border:    #888888;
+      --text:      #000000;
+      --muted:     #555555;
+      --accent:    #0047B3;
+      --acc-txt:   #FFFFFF;
+      --inset:     #C0C0C0;
+      --prog:      #0047B3;
+      --div:       #AAAAAA;
+      --d-easy:    #1A6B1A;
+      --d-medium:  #0047B3;
+      --d-hard:    #993300;
+      --d-expert:  #660066;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg:      #1A1A1A;
-        --win:     #2E2E2E;
-        --surface: #3A3A3A;
-        --btn:     #3C3C3C;
-        --border:  #505050;
-        --text:    #EEEEEE;
-        --muted:   #AAAAAA;
-        --accent:  #4D8FFF;
-        --acc-txt: #000000;
-        --inset:   #222222;
-        --prog:    #4D8FFF;
-        --div:     #444444;
+        --bg:       #1A1A1A;
+        --win:      #2E2E2E;
+        --surface:  #3A3A3A;
+        --btn:      #3C3C3C;
+        --border:   #505050;
+        --text:     #EEEEEE;
+        --muted:    #AAAAAA;
+        --accent:   #4D8FFF;
+        --acc-txt:  #000000;
+        --inset:    #222222;
+        --prog:     #4D8FFF;
+        --div:      #444444;
+        --d-easy:   #4CAF50;
+        --d-medium: #4D8FFF;
+        --d-hard:   #FF8C00;
+        --d-expert: #CC44CC;
       }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -72,16 +80,21 @@
     .back-btn:hover { color: var(--text); text-decoration: underline; }
 
     .card { background: var(--win); border: 1px solid var(--border); padding: 14px; margin-bottom: 10px; }
-
     .prog-wrap { height: 5px; background: var(--inset); border: 1px solid var(--border); margin-bottom: 12px; }
-    .prog-fill { height: 100%; background: var(--prog); transition: width 0.3s; }
+    .prog-fill  { height: 100%; background: var(--prog); transition: width 0.3s; }
 
-    .cat-badge {
+    .badge-row  { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+    .cat-badge, .diff-badge {
       display: inline-block; font-size: 10px;
-      border: 1px solid var(--border); padding: 1px 6px; margin-bottom: 10px;
-      color: var(--muted); background: var(--surface);
+      border: 1px solid var(--border); padding: 1px 6px; color: var(--muted); background: var(--surface);
     }
-    .q-text { font-size: 14px; line-height: 1.65; }
+    .diff-easy   { color: var(--d-easy);   border-color: var(--d-easy);   }
+    .diff-medium { color: var(--d-medium); border-color: var(--d-medium); }
+    .diff-hard   { color: var(--d-hard);   border-color: var(--d-hard);   }
+    .diff-expert { color: var(--d-expert); border-color: var(--d-expert); }
+
+    .q-text  { font-size: 14px; line-height: 1.65; }
+    .ep-note { font-size: 10px; color: var(--muted); font-style: italic; margin-top: 8px; }
 
     /* HOME */
     .home-bar {
@@ -100,14 +113,19 @@
     .mode-title { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
     .mode-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
-    .cat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .filter-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
     .chip {
       padding: 3px 10px; font-size: 11px; cursor: pointer;
       background: var(--btn); color: var(--text); border: 1px solid var(--border);
     }
     .chip:hover { background: var(--surface); }
     .chip.selected { background: var(--accent); color: var(--acc-txt); border-color: var(--accent); }
+    /* difficulty chip selected states */
+    .chip.sel-easy   { background: var(--d-easy);   color: #fff; border-color: var(--d-easy);   }
+    .chip.sel-medium { background: var(--d-medium); color: #fff; border-color: var(--d-medium); }
+    .chip.sel-hard   { background: var(--d-hard);   color: #fff; border-color: var(--d-hard);   }
+    .chip.sel-expert { background: var(--d-expert); color: #fff; border-color: var(--d-expert); }
 
     /* STUDY */
     .study-hud { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
@@ -135,7 +153,6 @@
     .ans-input:focus { border-color: var(--accent); }
     .ans-input:disabled { background: var(--inset); color: var(--muted); }
     .submit-row { display: flex; justify-content: flex-end; }
-
     .ans-reveal { display: none; margin-top: 12px; border-top: 1px dashed var(--div); padding-top: 12px; }
     .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
     @media (max-width: 420px) { .compare-grid { grid-template-columns: 1fr; } }
@@ -147,13 +164,11 @@
     }
     .user-val    { background: var(--surface); }
     .correct-val { background: var(--accent); color: var(--acc-txt); border-color: var(--accent); }
-
     .t-feedback { font-size: 13px; font-weight: bold; padding: 5px 0 3px; }
     .t-feedback.correct { color: var(--accent); }
     .t-feedback.wrong   { color: var(--muted); }
-
     .mc-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 10px 0 5px; border-top: 1px dashed var(--div); padding-top: 10px; }
-    .mc-choices { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .mc-choices { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
     .mc-btn {
       width: 100%; text-align: left; padding: 7px 10px;
       font-family: inherit; font-size: 12px; line-height: 1.45;
@@ -163,7 +178,7 @@
     .mc-btn:disabled { cursor: default; }
     .mc-btn.mc-correct { background: var(--accent); color: var(--acc-txt); border-color: var(--accent); font-weight: bold; }
     .mc-btn.mc-dim     { opacity: 0.3; }
-
+    .mc-num { display: inline-block; min-width: 18px; font-weight: bold; opacity: 0.45; margin-right: 6px; font-size: 11px; }
     .next-row { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 8px; }
 
     /* RESULTS */
@@ -191,12 +206,12 @@
 
 <header>
   <div class="app-title">Avatar: The Last Airbender — Trivia</div>
-  <div class="app-sub">60 questions · Study &amp; Trivia modes</div>
+  <div class="app-sub" id="app-sub">201 questions · Study &amp; Trivia modes</div>
 </header>
 
 <!-- HOME -->
 <div id="home" class="screen active">
-  <div class="home-bar">60 questions · 7 categories · type your answers</div>
+  <div class="home-bar" id="home-bar">63 questions · 7 categories · type your answers</div>
   <div class="mode-grid">
     <div class="mode-card" id="home-study-btn">
       <span class="mode-icon">📖</span>
@@ -209,7 +224,8 @@
       <div class="mode-desc">Type your answer — auto-scored, Enter for next</div>
     </div>
   </div>
-  <div class="cat-label">Filter by category</div>
+
+  <div class="filter-label">Category</div>
   <div class="chips" id="home-chips">
     <div class="chip selected" data-cat="all">All</div>
     <div class="chip" data-cat="gaang">Team Avatar</div>
@@ -220,18 +236,39 @@
     <div class="chip" data-cat="spirits">Spirits &amp; Lore</div>
     <div class="chip" data-cat="story">Episodes</div>
   </div>
+
+  <div class="filter-label">Difficulty</div>
+  <div class="chips" id="diff-chips">
+    <div class="chip selected" data-diff="all">All</div>
+    <div class="chip" data-diff="easy">Easy</div>
+    <div class="chip" data-diff="medium">Medium</div>
+    <div class="chip" data-diff="hard">Hard</div>
+    <div class="chip" data-diff="expert">Expert</div>
+  </div>
+
+  <div class="filter-label">Questions per game</div>
+  <div class="chips" id="size-chips">
+    <div class="chip" data-size="10">10</div>
+    <div class="chip" data-size="20">20</div>
+    <div class="chip" data-size="30">30</div>
+    <div class="chip selected" data-size="50">50</div>
+    <div class="chip" data-size="999">All</div>
+  </div>
 </div>
 
 <!-- STUDY -->
 <div id="study" class="screen">
   <button class="back-btn" id="study-back">← Back</button>
   <div class="study-hud">
-    <span>Card <strong id="s-num">1</strong> / <span id="s-total">60</span></span>
+    <span>Card <strong id="s-num">1</strong> / <span id="s-total">63</span></span>
     <span id="s-prog-label"></span>
   </div>
   <div class="prog-wrap"><div class="prog-fill" id="s-prog" style="width:0%"></div></div>
   <div class="card">
-    <span class="cat-badge" id="s-badge"></span>
+    <div class="badge-row">
+      <span class="cat-badge" id="s-badge"></span>
+      <span class="diff-badge" id="s-diff"></span>
+    </div>
     <div class="q-text" id="s-question"></div>
     <div style="margin-top:14px;">
       <button class="btn btn-default" id="s-reveal-btn" onclick="revealStudy()">Reveal Answer</button>
@@ -241,10 +278,11 @@
       <div class="ans-label">Answer</div>
       <div class="ans-text" id="s-answer"></div>
       <div class="explain-text" id="s-explain"></div>
+      <div class="ep-note" id="s-ep"></div>
     </div>
   </div>
   <div id="s-next-row" class="next-row" style="display:none">
-    <span class="key-hint"><kbd>↵</kbd> next</span>
+    <span class="key-hint"><kbd>↵</kbd> next &nbsp; <kbd>R</kbd> shuffle</span>
     <button class="btn btn-default" onclick="nextStudyCard()">Next →</button>
   </div>
   <div class="study-footer">
@@ -256,13 +294,16 @@
 <div id="trivia" class="screen">
   <button class="back-btn" id="trivia-back">← Back</button>
   <div class="trivia-hud">
-    <span id="t-count">Q 1 / 60</span>
+    <span id="t-count">Q 1 / 63</span>
     <span>Score: <strong id="t-score">0</strong></span>
   </div>
   <div class="prog-wrap"><div class="prog-fill" id="t-prog" style="width:0%"></div></div>
   <div class="card">
-    <span class="cat-badge" id="t-badge"></span>
-    <div class="q-text" id="t-question" style="margin-top:8px;"></div>
+    <div class="badge-row">
+      <span class="cat-badge" id="t-badge"></span>
+      <span class="diff-badge" id="t-diff"></span>
+    </div>
+    <div class="q-text" id="t-question"></div>
   </div>
   <div class="ans-box">
     <div class="ans-box-label">Your Answer</div>
@@ -284,9 +325,11 @@
         </div>
       </div>
       <div id="t-feedback" class="t-feedback"></div>
+      <div class="ep-note" id="t-ep"></div>
       <div id="t-mc-section" style="display:none">
         <div class="mc-label">Pick the correct answer:</div>
         <div class="mc-choices" id="t-mc-choices"></div>
+        <div class="key-hint" style="margin-bottom:4px;"><kbd>1</kbd>–<kbd>4</kbd> select &nbsp; <kbd>↵</kbd> next &nbsp; <kbd>R</kbd> restart</div>
       </div>
       <div class="next-row">
         <span class="key-hint"><kbd>↵</kbd> next</span>
@@ -318,279 +361,704 @@
 
 <script>
 // ── QUESTIONS ─────────────────────────────────────────────
+// diff: "easy" | "medium" | "hard"
 const ALL_QUESTIONS = [
   // TEAM AVATAR
-  { cat:"gaang", catName:"Team Avatar",
+  { cat:"gaang", catName:"Team Avatar", diff:"easy",
     q:"What is the name of Aang's flying bison?",
-    a:"Appa",
-    explain:"Sky bison and a full member of Team Avatar." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Appa", explain:"Sky bison and a full member of Team Avatar." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium",
     q:"What color are Aang's airbending tattoos and what do they signify?",
-    a:"Blue — airbending mastery",
-    explain:"Blue arrow tattoos mark an Air Nomad as a fully realized airbending master." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Blue — airbending mastery", explain:"Blue arrow tattoos mark an Air Nomad as a fully realized airbending master." },
+  { cat:"gaang", catName:"Team Avatar", diff:"easy",
     q:"Which Air Temple was Aang raised at?",
-    a:"Southern Air Temple",
-    explain:"The first Air Nomad ruin Team Avatar visits in Book 1." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Southern Air Temple", explain:"The first Air Nomad ruin Team Avatar visits in Book 1." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium",
     q:"What is the name of Katara and Sokka's father?",
-    a:"Hakoda",
-    explain:"Chief Hakoda led the Southern Water Tribe warriors against the Fire Nation." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Hakoda", explain:"Chief Hakoda led the Southern Water Tribe warriors against the Fire Nation." },
+  { cat:"gaang", catName:"Team Avatar", diff:"easy",
     q:"What rare waterbending technique does Katara discover on a full moon?",
-    a:"Bloodbending",
-    explain:"The full moon amplifies waterbending enough to control water inside living creatures." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Bloodbending", explain:"The full moon amplifies waterbending enough to control water inside living creatures." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard",
     q:"Who carved Katara's betrothal necklace and for whom was it made?",
-    a:"Pakku, for Gran Gran",
-    explain:"Pakku carved it for Kanna before she fled their arranged marriage." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Pakku, for Gran Gran", explain:"Pakku carved it for Kanna before she fled their arranged marriage." },
+  { cat:"gaang", catName:"Team Avatar", diff:"easy",
     q:"What species is Momo?",
-    a:"Winged lemur",
-    explain:"Found at the Southern Air Temple — thought extinct like the sky bison." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Winged lemur", explain:"Found at the Southern Air Temple — thought extinct like the sky bison." },
+  { cat:"gaang", catName:"Team Avatar", diff:"easy",
     q:"What is Sokka's signature weapon?",
-    a:"Boomerang",
-    explain:"Always returns to him at the most dramatic moments." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Boomerang", explain:"Always returns to him at the most dramatic moments." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard",
     q:"What alias does Aang use at the Fire Nation school?",
-    a:"Kuzon",
-    explain:"Named after a Fire Nation friend from over a century ago." },
-  { cat:"gaang", catName:"Team Avatar",
+    a:"Kuzon", explain:"Named after a Fire Nation friend from over a century ago." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium",
     q:"Who teaches Aang earthbending and what is her special ability?",
-    a:"Toph — seismic sense",
-    explain:"Blind since birth, Toph developed seismic sense through vibrations." },
+    a:"Toph — seismic sense", explain:"Blind since birth, Toph developed seismic sense through vibrations." },
 
   // FIRE NATION
-  { cat:"fire", catName:"Fire Nation",
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"What title does Ozai give himself before the final battle?",
-    a:"Phoenix King",
-    explain:"He crowns himself Phoenix King before attempting to burn down the Earth Kingdom." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Phoenix King", explain:"He crowns himself Phoenix King before attempting to burn down the Earth Kingdom." },
+  { cat:"fire", catName:"Fire Nation", diff:"easy",
     q:"What is visually distinctive about Azula's fire?",
-    a:"Blue",
-    explain:"Azula's blue fire is hotter and more precise than normal orange fire." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Blue", explain:"Azula's blue fire is hotter and more precise than normal orange fire." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"How did Zuko get the scar on his face?",
-    a:"Agni Kai with his father",
-    explain:"Zuko refused to fight and Ozai burned him as punishment." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Agni Kai with his father", explain:"Zuko refused to fight and Ozai burned him as punishment." },
+  { cat:"fire", catName:"Fire Nation", diff:"easy",
     q:"What is Zuko's masked vigilante identity?",
-    a:"The Blue Spirit",
-    explain:"Zuko wore a stolen mask to rescue Aang without revealing himself." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"The Blue Spirit", explain:"Zuko wore a stolen mask to rescue Aang without revealing himself." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"What is the name of Iroh's son who died at Ba Sing Se?",
-    a:"Lu Ten",
-    explain:"His death broke Iroh and allowed Ozai to seize power." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Lu Ten", explain:"His death broke Iroh and allowed Ozai to seize power." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"What did Iroh name his tea shop?",
-    a:"The Jasmine Dragon",
-    explain:"Iroh fulfilled his dream running a tea shop in Ba Sing Se's Lower Ring." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"The Jasmine Dragon", explain:"Iroh fulfilled his dream running a tea shop in Ba Sing Se's Lower Ring." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"Who are Azula's two companions hunting Zuko and Iroh?",
-    a:"Mai and Ty Lee",
-    explain:"Childhood friends of Azula — Mai throws blades, Ty Lee chi-blocks." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Mai and Ty Lee", explain:"Childhood friends of Azula — Mai throws blades, Ty Lee chi-blocks." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"What is Ty Lee's technique for neutralizing benders?",
-    a:"Chi blocking",
-    explain:"Precise jabs to pressure points cut off chi flow, disabling bending." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Chi blocking", explain:"Precise jabs to pressure points cut off chi flow, disabling bending." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
     q:"Who was Fire Lord before Ozai?",
-    a:"Azulon",
-    explain:"Lineage: Sozin → Azulon → Ozai (after Iroh was passed over)." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Azulon", explain:"Lineage: Sozin → Azulon → Ozai (after Iroh was passed over)." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard",
     q:"How did Fire Lord Azulon die?",
-    a:"Poisoned by Ursa",
-    explain:"Ursa made a deal — Azulon's death in exchange for Zuko's life." },
-  { cat:"fire", catName:"Fire Nation",
+    a:"Poisoned by Ursa", explain:"Ursa made a deal — Azulon's death in exchange for Zuko's life." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard",
     q:"What is the Ember Island Players' play about Team Avatar called?",
-    a:"The Boy in the Iceberg",
-    explain:"A Fire Nation propaganda play that hilariously misrepresents Team Avatar's story." },
+    a:"The Boy in the Iceberg", explain:"A Fire Nation propaganda play that hilariously misrepresents Team Avatar's story." },
 
   // WATER TRIBES
-  { cat:"water", catName:"Water Tribes",
+  { cat:"water", catName:"Water Tribes", diff:"medium",
     q:"What are the names of the North Pole's Ocean and Moon spirits?",
-    a:"Tui and La",
-    explain:"They take the form of two koi fish in the Northern Water Tribe's spirit oasis." },
-  { cat:"water", catName:"Water Tribes",
+    a:"Tui and La", explain:"They take the form of two koi fish in the Northern Water Tribe's spirit oasis." },
+  { cat:"water", catName:"Water Tribes", diff:"easy",
     q:"What does Princess Yue do at the end of the Siege of the North?",
-    a:"Becomes the Moon Spirit",
-    explain:"Given life by the Moon Spirit as a baby, she returns it — becoming the new moon." },
-  { cat:"water", catName:"Water Tribes",
+    a:"Becomes the Moon Spirit", explain:"Given life by the Moon Spirit as a baby, she returns it — becoming the new moon." },
+  { cat:"water", catName:"Water Tribes", diff:"medium",
     q:"Who killed the Moon Spirit?",
-    a:"Zhao",
-    explain:"Zhao killed the koi fish that was Tui's physical form, briefly wiping out waterbending." },
-  { cat:"water", catName:"Water Tribes",
+    a:"Admiral Zhao", explain:"Zhao killed the koi fish that was Tui's physical form, briefly wiping out waterbending." },
+  { cat:"water", catName:"Water Tribes", diff:"easy",
     q:"Who trained Katara at the North Pole?",
-    a:"Pakku",
-    explain:"He refused at first due to her gender, but relented after recognizing her necklace." },
-  { cat:"water", catName:"Water Tribes",
+    a:"Master Pakku", explain:"He refused at first due to her gender, but relented after recognizing her necklace." },
+  { cat:"water", catName:"Water Tribes", diff:"medium",
     q:"What sea creature guards Kyoshi Island's waters?",
-    a:"The Unagi",
-    explain:"Aang rides the Unagi to douse fires after Zuko's attack." },
+    a:"The Unagi", explain:"Aang rides the Unagi to douse fires after Zuko's attack." },
 
   // EARTH KINGDOM
-  { cat:"earth", catName:"Earth Kingdom",
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard",
     q:"What is the Earth King's name?",
-    a:"Kuei",
-    explain:"So isolated by Long Feng that he didn't know a war was happening." },
-  { cat:"earth", catName:"Earth Kingdom",
+    a:"Kuei", explain:"So isolated by Long Feng that he didn't know a war was happening." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"medium",
     q:"What is the name of the Earth King's bear?",
-    a:"Bosco",
-    explain:"Notably just a bear — not a hybrid, one of the only such animals in Avatar." },
-  { cat:"earth", catName:"Earth Kingdom",
+    a:"Bosco", explain:"Notably just a bear — not a hybrid, one of the only such animals in Avatar." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard",
     q:"What city is Toph from?",
-    a:"Gaoling",
-    explain:"Home of the Beifong estate and the underground Earth Rumble tournaments." },
-  { cat:"earth", catName:"Earth Kingdom",
+    a:"Gaoling", explain:"Home of the Beifong estate and the underground Earth Rumble tournaments." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"easy",
     q:"What was Toph's arena name?",
-    a:"The Blind Bandit",
-    explain:"She dominated Earth Rumble VI despite her small size and blindness." },
-  { cat:"earth", catName:"Earth Kingdom",
+    a:"The Blind Bandit", explain:"She dominated Earth Rumble VI despite her small size and blindness." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard",
     q:"What is Toph's mother's name?",
-    a:"Poppy Beifong",
-    explain:"She and Lao Beifong overprotected Toph, unaware she was a legendary earthbender." },
-  { cat:"earth", catName:"Earth Kingdom",
+    a:"Poppy Beifong", explain:"She and Lao Beifong overprotected Toph, unaware she was a legendary earthbender." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"easy",
     q:"What secret police force controls Ba Sing Se's information under Long Feng?",
-    a:"The Dai Li",
-    explain:"Founded by Avatar Kyoshi, corrupted over time by Long Feng." },
-  { cat:"earth", catName:"Earth Kingdom",
+    a:"The Dai Li", explain:"Founded by Avatar Kyoshi, corrupted over time by Long Feng." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"medium",
     q:"Who is the king of Omashu and what is his tie to Aang?",
-    a:"Bumi — Aang's friend from 100 years ago",
-    explain:"The only living person who knew Aang before he was frozen." },
+    a:"Bumi — Aang's friend from 100 years ago", explain:"The only living person who knew Aang before he was frozen." },
 
   // BENDING & TECHNIQUES
-  { cat:"bending", catName:"Bending & Techniques",
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium",
     q:"Who invented metalbending?",
-    a:"Toph",
-    explain:"She realized metal contains earth impurities she can sense and bend." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Toph", explain:"She realized metal contains earth impurities she can sense and bend." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard",
     q:"Who invented lightning redirection and what was the inspiration?",
-    a:"Iroh — waterbending's circular flow",
-    explain:"Accept the energy and guide it out — don't resist it." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Iroh — waterbending's circular flow", explain:"Accept the energy and guide it out — don't resist it." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium",
     q:"What animal do airbenders take inspiration from?",
-    a:"Sky bison",
-    explain:"Sky bison were the original airbenders." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Sky bison", explain:"Sky bison were the original airbenders." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium",
     q:"What animal did the original earthbenders learn from?",
-    a:"Badgermoles",
-    explain:"The badgermoles of the Cave of Two Lovers were the first earthbenders." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Badgermoles", explain:"The badgermoles of the Cave of Two Lovers were the first earthbenders." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium",
     q:"What did original human firebenders learn from?",
-    a:"Dragons",
-    explain:"Ran and Shaw showed Zuko and Aang that fire is life energy, not destruction." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Dragons", explain:"Ran and Shaw showed Zuko and Aang that fire is life energy, not destruction." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard",
     q:"What are the names of the last two living dragons?",
-    a:"Ran and Shaw",
-    explain:"They revealed the true source of firebending to Zuko and Aang." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Ran and Shaw", explain:"They revealed the true source of firebending to Zuko and Aang." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium",
     q:"What is Combustionbending and how do you stop it?",
-    a:"Third-eye beams — hit the tattoo",
-    explain:"A precise strike to the forehead tattoo causes the beam to backfire fatally." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Third-eye beams — hit the tattoo", explain:"A precise strike to the forehead tattoo causes the beam to backfire fatally." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard",
     q:"What element is the natural opposite of airbending?",
-    a:"Earth",
-    explain:"Air is freedom and change; earth is solidity and permanence." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Earth", explain:"Air is freedom and change; earth is solidity and permanence." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium",
     q:"What does the lion turtle teach Aang?",
-    a:"Energybending",
-    explain:"Before the elements, humans bent the energy within themselves." },
-  { cat:"bending", catName:"Bending & Techniques",
+    a:"Energybending", explain:"Before the elements, humans bent the energy within themselves." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard",
     q:"What is Sokka's sword made from and who forged it?",
-    a:"Meteorite — Piandao",
-    explain:"The black meteorite sword is one-of-a-kind, forged with Fire Nation swordmaster Piandao." },
+    a:"Meteorite — Piandao", explain:"The black meteorite sword is one-of-a-kind, forged with Fire Nation swordmaster Piandao." },
 
   // SPIRITS & LORE
-  { cat:"spirits", catName:"Spirits & Lore",
+  { cat:"spirits", catName:"Spirits & Lore", diff:"medium",
     q:"What is the face-stealing spirit's name and the rule for surviving him?",
-    a:"Koh — show no emotion",
-    explain:"Show any reaction and he takes your face permanently." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Koh — show no emotion", explain:"Show any reaction and he takes your face permanently." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"medium",
     q:"Name the giant owl spirit who guards a vast library.",
-    a:"Wan Shi Tong",
-    explain:"Means 'He Who Knows Ten Thousand Things.' Turns hostile if he thinks knowledge will be used for war." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Wan Shi Tong", explain:"Means 'He Who Knows Ten Thousand Things.' Turns hostile when he thinks knowledge will be used for war." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard",
     q:"What secret society does Iroh belong to and what game identifies members?",
-    a:"Order of the White Lotus — Pai Sho",
-    explain:"The white lotus tile is played as an opening greeting among members." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Order of the White Lotus — Pai Sho", explain:"The white lotus tile is played as an opening greeting among members." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"easy",
     q:"What is an Agni Kai?",
-    a:"Fire duel",
-    explain:"A formal Fire Nation duel fought at sunset — a matter of honor." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Fire duel", explain:"A formal Fire Nation duel fought at sunset — a matter of honor." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"easy",
     q:"Name Aang's past Avatar life who was Sozin's best friend.",
-    a:"Roku",
-    explain:"Their split over Sozin's ambitions set the hundred-year war in motion." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Roku", explain:"Their split over Sozin's ambitions set the hundred-year war in motion." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard",
     q:"What is the name of Avatar Roku's dragon?",
-    a:"Fang",
-    explain:"Roku's loyal red dragon, seen in flashbacks and spirit world visions." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Fang", explain:"Roku's loyal red dragon, seen in flashbacks and spirit world visions." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"medium",
     q:"What did Sozin do that led to Roku's death?",
-    a:"Left him to die in a volcanic eruption",
-    explain:"Sozin started to help then flew away, letting his friend die so the empire could expand." },
-  { cat:"spirits", catName:"Spirits & Lore",
+    a:"Left him to die in a volcanic eruption", explain:"Sozin started to help then flew away, letting his friend die so the empire could expand." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"medium",
     q:"What is Hei Bai and what caused its rampage?",
-    a:"Forest spirit (panda) — humans burned its forest",
-    explain:"It transforms from a panda into a monstrous creature when enraged." },
-  { cat:"spirits", catName:"Spirits & Lore",
-    q:"Which Avatar came directly before Aang?",
-    a:"Kuruk",
-    explain:"Cycle: Air→Water→Earth→Fire. Before Aang (air) was Kuruk (water)." },
+    a:"Forest spirit (panda) — humans burned its forest", explain:"It transforms from a panda into a monstrous creature when enraged." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard",
+    q:"Which Avatar directly preceded Kyoshi in the reincarnation cycle?",
+    a:"Kuruk", explain:"Chronological order: Yangchen (Air) → Kuruk (Water) → Kyoshi (Earth) → Roku (Fire) → Aang (Air)." },
 
   // EPISODES & STORY
-  { cat:"story", catName:"Episodes & Story",
-    q:"Why was Aang frozen in an iceberg for 100 years?",
-    a:"Ran from his duties; froze in a storm",
-    explain:"Overwhelmed at 12 by the Avatar news, he fled — and the Avatar State preserved him in ice." },
-  { cat:"story", catName:"Episodes & Story",
+  { cat:"story", catName:"Episodes & Story", diff:"medium",
+    q:"Why was Aang frozen in the iceberg for 100 years?",
+    a:"Ran from his duties; froze in a storm", explain:"Overwhelmed at 12 by the Avatar news, Aang fled — and the Avatar State preserved him in ice." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium",
     q:"What key information does Team Avatar find in Wan Shi Tong's library?",
-    a:"Date of Sozin's Comet",
-    explain:"This gives them a hard deadline before Ozai's power becomes unstoppable." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Date of Sozin's Comet", explain:"This gives them a hard deadline before Ozai's power becomes unstoppable." },
+  { cat:"story", catName:"Episodes & Story", diff:"easy",
     q:"Who was Aang's mentor at the Southern Air Temple?",
-    a:"Gyatso",
-    explain:"Aang finds his skeleton surrounded by fallen Fire Nation soldiers." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Monk Gyatso", explain:"Aang finds his skeleton surrounded by fallen Fire Nation soldiers." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard",
     q:"Who teaches Aang the seven chakras and what must he give up for the last one?",
-    a:"Guru Pathik — attachment to Katara",
-    explain:"Aang refuses, choosing to save Katara over unlocking the Avatar State." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Guru Pathik — attachment to Katara", explain:"Aang refuses, choosing to save Katara over unlocking the Avatar State." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium",
     q:"In which episode does Zuko join Team Avatar?",
-    a:"The Western Air Temple",
-    explain:"He arrives offering to teach Aang firebending and eventually earns their trust." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"The Western Air Temple", explain:"He arrives offering to teach Aang firebending and eventually earns their trust." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard",
     q:"What does Iroh notice about the Freedom Fighter Smellerbee?",
-    a:"He thinks she's a boy — she's a girl",
-    explain:"Iroh apologizes and calls 'Smellerbee' a beautiful name." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"He thinks she's a boy — she's a girl", explain:"Iroh apologizes and calls 'Smellerbee' a beautiful name." },
+  { cat:"story", catName:"Episodes & Story", diff:"easy",
     q:"What keeps happening to the cabbage merchant and what is his name?",
-    a:"Cabbages destroyed — never named",
-    explain:"'My cabbages!' is the series' best running gag. His name is never revealed." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Cabbages destroyed — never named", explain:"'My cabbages!' is the series' best running gag. His name is never revealed." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium",
     q:"Name the Freedom Fighters' leader and his weapon.",
-    a:"Jet — hook swords",
-    explain:"Charismatic but morally gray. Later brainwashed by the Dai Li in Ba Sing Se." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Jet — hook swords", explain:"Charismatic but morally gray. Later brainwashed by the Dai Li in Ba Sing Se." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium",
     q:"What choice does Zuko make in 'Crossroads of Destiny'?",
-    a:"Sides with Azula; strikes down Aang",
-    explain:"He chose his old life over redemption. He later calls it his worst mistake." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Sides with Azula; strikes down Aang", explain:"He chose his old life over redemption. He later calls it his worst mistake." },
+  { cat:"story", catName:"Episodes & Story", diff:"easy",
     q:"What is Sozin's Comet and what did Sozin use it for?",
-    a:"Amplifies firebending — wiped out Air Nomads",
-    explain:"100 years before the show, Sozin used it to destroy all Air Nomads in one day." },
-  { cat:"story", catName:"Episodes & Story",
+    a:"Amplifies firebending — wiped out Air Nomads", explain:"100 years before the show, Sozin used it to destroy all Air Nomads in one day." },
+  { cat:"story", catName:"Episodes & Story", diff:"easy",
     q:"How does Aang defeat Ozai without killing him?",
-    a:"Energybending — removes his bending",
-    explain:"The lion turtle's gift let Aang take Ozai's power instead of his life." }
+    a:"Energybending — removes his bending", explain:"The lion turtle's gift let Aang take Ozai's power instead of his life." },
+
+  // ── NEW: TEAM AVATAR ─────────────────────────────────────
+  { cat:"gaang", catName:"Team Avatar", diff:"easy", ep:"Book 1: The Warriors of Kyoshi",
+    q:"Who leads the Kyoshi Warriors?",
+    a:"Suki", explain:"Suki leads the all-female warriors who protect Kyoshi Island." },
+  { cat:"gaang", catName:"Team Avatar", diff:"easy", ep:"Book 2: The Blind Bandit",
+    q:"What nickname does Toph give Aang?",
+    a:"Twinkle Toes", explain:"Toph coins the nickname because of Aang's light, airy footsteps." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard", ep:"Book 3: The Runaway",
+    q:"What does Sokka nickname the Combustionbending assassin?",
+    a:"Sparky Sparky Boom Man", explain:"Sokka's nickname — the character's real name is never given in the show." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard", ep:"Book 2: The Swamp",
+    q:"What does Sokka see in his vision in the Foggy Swamp?",
+    a:"Princess Yue", explain:"The swamp's visions show people the characters have lost or will meet." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard", ep:"Book 2: The Swamp",
+    q:"What does Aang see in his vision in the Foggy Swamp?",
+    a:"A girl — later revealed to be Toph", explain:"The swamp shows visions of people important to the future." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard", ep:"Book 1: The Storm",
+    q:"Why did Aang run away from the Air Temples the night before his destiny was announced?",
+    a:"He was afraid of losing Gyatso and being isolated for Avatar training",
+    explain:"Aang overheard the monks planned to send him away from Gyatso to complete his training." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium", ep:"Book 3: The Painted Lady",
+    q:"What does Katara disguise herself as in 'The Painted Lady'?",
+    a:"The Painted Lady — a river spirit", explain:"She paints her face and pretends to be a local spirit to help a poisoned Fire Nation village." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium", ep:"Book 3: Sokka's Master",
+    q:"What insecurity does Sokka reveal in 'Sokka's Master'?",
+    a:"He feels useless as the only non-bender", explain:"This leads him to seek out swordmaster Piandao for training." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium", ep:"Book 3: The Headband",
+    q:"What does Aang do at the Fire Nation school that gets the students excited?",
+    a:"He starts a secret dance party", explain:"Aang realizes Fire Nation students aren't so different — they just want to have fun." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard", ep:"Book 2: Crossroads of Destiny",
+    q:"What does Katara use to revive Aang after he is killed by Azula's lightning?",
+    a:"Spirit water from the North Pole", explain:"Katara had kept a vial of spirit water since Book 1 — she uses it to bring Aang back." },
+  { cat:"gaang", catName:"Team Avatar", diff:"hard", ep:"Book 1: Bato of the Water Tribe",
+    q:"What does Aang hide from Sokka and Katara that almost breaks up Team Avatar?",
+    a:"A letter from their father with a map to find him", explain:"Aang was afraid they'd leave him to go to their father." },
+  { cat:"gaang", catName:"Team Avatar", diff:"medium", ep:"Book 1: Bato of the Water Tribe",
+    q:"Who is Bato and what is his relationship to Hakoda?",
+    a:"Hakoda's closest friend and fellow Water Tribe warrior", explain:"Bato leads the team to a monastery where they find a message from Hakoda." },
+
+  // ── NEW: FIRE NATION ─────────────────────────────────────
+  { cat:"fire", catName:"Fire Nation", diff:"medium", ep:"Book 3: The Avatar and the Fire Lord",
+    q:"What is the name of Zuko's mother?",
+    a:"Ursa", explain:"Ursa was banished by Ozai after she made a deal to save Zuko's life." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 1: The Deserter",
+    q:"Who is Jeong Jeong?",
+    a:"The first Fire Nation military deserter — a master firebender", explain:"He lived as a hermit refusing to teach firebending, calling it a curse." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 1: The Deserter",
+    q:"How does Jeong Jeong view his own firebending?",
+    a:"As a curse — only destruction, no creation", explain:"Unlike waterbenders who can heal, firebenders only harm. This haunts him." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 1: The Deserter",
+    q:"What injury does Aang accidentally cause Katara while learning firebending?",
+    a:"He burns her hands", explain:"This causes Aang to refuse firebending training until Book 3." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
+    q:"Why does Aang avoid firebending for most of the series?",
+    a:"He burned Katara and fears hurting people", explain:"The incident in 'The Deserter' makes Aang refuse to firebend until the Sun Warriors." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium", ep:"Book 3: The Boiling Rock",
+    q:"What is the Boiling Rock?",
+    a:"A maximum-security Fire Nation prison on a volcanic island", explain:"The prison sits on a volcanic caldera filled with boiling water, making escape seemingly impossible." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 2: Tales of Ba Sing Se",
+    q:"What song does Iroh sing in 'Tales of Ba Sing Se'?",
+    a:"Leaves from the Vine", explain:"Iroh sings it as a lullaby for his deceased son Lu Ten on his birthday." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 2: Crossroads of Destiny",
+    q:"How does Azula enter Ba Sing Se undetected?",
+    a:"She disguises her group as the Kyoshi Warriors", explain:"Azula captured the Kyoshi Warriors and stole their uniforms and makeup." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium", ep:"Book 3: The Beach",
+    q:"Why is Ember Island significant to Zuko?",
+    a:"He spent childhood summers there when his family was still whole", explain:"For Zuko it represents a time before everything fell apart." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 3: The Firebending Masters",
+    q:"Why can Zuko not generate fire at the start of Book 3?",
+    a:"His bending was fueled by anger and he no longer has it", explain:"After choosing good, his old source of power is gone — he must find a new one." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium", ep:"Book 1: The Siege of the North",
+    q:"What does Admiral Zhao plan to do that even horrifies Zuko?",
+    a:"Kill the Moon Spirit to permanently destroy waterbending", explain:"Zhao sees it as the ultimate weapon — Zuko tries to stop him but fails." },
+  { cat:"fire", catName:"Fire Nation", diff:"hard", ep:"Book 1: The Winter Solstice",
+    q:"Who is Shyu and what does he risk to help Aang?",
+    a:"A Fire Sage who defies his order to help Aang contact Avatar Roku", explain:"Shyu believes in the Avatar and acts alone, facing imprisonment for it." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium", ep:"Book 3: The Day of Black Sun",
+    q:"What does Ozai do to avoid the Day of Black Sun invasion?",
+    a:"He hides underground in a bunker during the eclipse", explain:"Azula tipped him off — the invasion fails completely." },
+  { cat:"fire", catName:"Fire Nation", diff:"medium",
+    q:"What is Ozai's ultimate plan for Sozin's Comet?",
+    a:"Burn the entire Earth Kingdom continent to ash", explain:"With the comet's power, Ozai could destroy the whole Earth Kingdom in one sweep." },
+
+  // ── NEW: WATER TRIBES ────────────────────────────────────
+  { cat:"water", catName:"Water Tribes", diff:"hard", ep:"Book 3: The Puppetmaster",
+    q:"Who is Hama?",
+    a:"A Southern Water Tribe waterbender who survived Fire Nation captivity", explain:"She invented bloodbending as a way to escape using the water inside her captors." },
+  { cat:"water", catName:"Water Tribes", diff:"hard", ep:"Book 3: The Puppetmaster",
+    q:"How did Hama survive decades imprisoned in a Fire Nation jail?",
+    a:"She waterbent moisture from the walls and plants in her cell", explain:"She also used her technique on rats to escape, then hid in the Fire Nation." },
+  { cat:"water", catName:"Water Tribes", diff:"hard", ep:"Book 3: The Southern Raiders",
+    q:"Who is Yon Rha?",
+    a:"The Fire Nation soldier who killed Katara's mother", explain:"Katara tracks him down with Zuko's help in 'The Southern Raiders.'" },
+  { cat:"water", catName:"Water Tribes", diff:"hard", ep:"Book 3: The Southern Raiders",
+    q:"What does Katara decide when she finally confronts Yon Rha?",
+    a:"She cannot bring herself to kill him", explain:"She tells Zuko she will never forgive him but leaves him alive — choosing peace over vengeance." },
+  { cat:"water", catName:"Water Tribes", diff:"medium", ep:"Book 1: The Waterbending Master",
+    q:"What are Northern Water Tribe women restricted to in waterbending?",
+    a:"Healing only — combat waterbending was forbidden for women", explain:"Katara challenges this tradition and eventually earns the right to train with Pakku." },
+  { cat:"water", catName:"Water Tribes", diff:"medium", ep:"Book 1: The Waterbending Master",
+    q:"How does Katara convince Pakku to teach her combat waterbending?",
+    a:"She challenges him to a duel", explain:"Pakku finally relents after recognizing Kanna's betrothal necklace on Katara." },
+  { cat:"water", catName:"Water Tribes", diff:"hard", ep:"Book 1: The Waterbending Master",
+    q:"What is the history between Gran Gran (Kanna) and Master Pakku?",
+    a:"They were betrothed — she fled the North Pole rather than marry him", explain:"Pakku carved her betrothal necklace; when Katara shows it, he recognizes it and softens." },
+  { cat:"water", catName:"Water Tribes", diff:"medium", ep:"Book 3: The Boiling Rock",
+    q:"Who does Sokka rescue at the Boiling Rock besides his father?",
+    a:"Suki", explain:"Suki was captured by Azula at the Serpent's Pass and imprisoned at the Boiling Rock." },
+  { cat:"water", catName:"Water Tribes", diff:"medium", ep:"Book 3: The Boiling Rock",
+    q:"How does Sokka's team escape from the Boiling Rock?",
+    a:"They hijack a gondola car over the boiling lake", explain:"Mai betrays Azula by stopping the gondola pursuit, saving Sokka's group." },
+  { cat:"water", catName:"Water Tribes", diff:"medium", ep:"Book 2: The Desert",
+    q:"What does Sokka drink in the Si Wong Desert that causes hallucinations?",
+    a:"Cactus juice", explain:"'It'll quench ya! Nothing's quenchier.' Sokka is hilariously intoxicated by it." },
+
+  // ── NEW: EARTH KINGDOM ───────────────────────────────────
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: The Cave of Two Lovers",
+    q:"Who were Oma and Shu and why does their story matter?",
+    a:"Lovers from warring villages — their names combined to make Omashu", explain:"They learned earthbending from badgermoles to build tunnels to reach each other." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: Return to Omashu",
+    q:"What is Omashu renamed after the Fire Nation conquers it?",
+    a:"New Ozai", explain:"The Fire Nation renames all conquered territories, erasing their cultural identity." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"medium", ep:"Book 2: City of Walls and Secrets",
+    q:"What is the secret Long Feng maintains about Ba Sing Se?",
+    a:"That a war is being fought outside the city walls", explain:"He claims knowing about the war would cause panic — really it keeps him in power." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: Avatar Day",
+    q:"In 'Avatar Day,' what crime is Aang put on trial for in Chin Village?",
+    a:"The murder of Chin the Conqueror — committed by Avatar Kyoshi", explain:"The village holds an anti-Avatar holiday because Kyoshi killed their founder." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: Avatar Day",
+    q:"How did Avatar Kyoshi deal with Chin the Conqueror?",
+    a:"She used earthbending to separate her peninsula from the mainland, causing Chin to fall", explain:"Kyoshi created Kyoshi Island this way — Chin refused to step back and fell into the sea." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: The Blind Bandit",
+    q:"What is the name of Toph's father?",
+    a:"Lao Beifong", explain:"Lao Beifong hired earthbending masters to recapture Toph after she joined Aang." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"medium", ep:"Book 2: Lake Laogai",
+    q:"What is Lake Laogai?",
+    a:"The Dai Li's secret underground base beneath a lake outside Ba Sing Se", explain:"It houses brainwashing facilities and is where Appa was held." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: Lake Laogai",
+    q:"What happens to Jet at Lake Laogai?",
+    a:"He is fatally wounded by Long Feng", explain:"Jet was brainwashed by the Dai Li; Long Feng kills him when he breaks free." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: The Avatar State",
+    q:"What is General Fong's plan for triggering Aang's Avatar State?",
+    a:"He threatens Katara to emotionally break Aang into triggering it", explain:"Fong believes the Avatar State would instantly end the war — not realizing the danger." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"medium", ep:"Book 2: The Avatar State",
+    q:"What would happen to the Avatar cycle if Aang died while in the Avatar State?",
+    a:"The cycle would end permanently — no more Avatars", explain:"This is why protecting Aang is so critical and why the Avatar State is both powerful and dangerous." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: The Drill",
+    q:"How does Team Avatar stop the Fire Nation's giant drilling machine?",
+    a:"They destroy the internal support braces, collapsing the drill from inside", explain:"Aang, Katara, and Toph destroy the slurry pipes so the drill can't bore through the wall." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 2: The Desert",
+    q:"Who stole Appa in the Si Wong Desert?",
+    a:"Sandbenders", explain:"A group of sandbenders captured Appa and sold him, sending Aang into a near-uncontrollable rage." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"medium", ep:"Book 1: The Northern Air Temple",
+    q:"What has happened to the Northern Air Temple when Team Avatar arrives?",
+    a:"Refugees have taken it over and a mechanist inventor has settled there", explain:"The Mechanist and displaced Earth Kingdom families made it their home." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"hard", ep:"Book 1: The Northern Air Temple",
+    q:"What was the Mechanist secretly building for the Fire Nation?",
+    a:"War machines and weapons, under coercion", explain:"The Fire Nation threatened his people to force him to develop military technology." },
+
+  // ── NEW: BENDING & TECHNIQUES ────────────────────────────
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium", ep:"Book 3: The Day of Black Sun",
+    q:"What happens to firebending during a solar eclipse?",
+    a:"It completely vanishes", explain:"This is why Team Avatar chooses the solar eclipse for their invasion of the Fire Nation." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard", ep:"Book 3: The Firebending Masters",
+    q:"What is the Dancing Dragon?",
+    a:"The original firebending form taught by the dragons Ran and Shaw", explain:"Zuko and Aang perform it together to demonstrate their true inner fire to the dragons." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard", ep:"Book 3: The Firebending Masters",
+    q:"What ancient civilization preserved the original source of firebending?",
+    a:"The Sun Warriors", explain:"Everyone believed they were extinct. Their chief reveals they kept the last dragons alive in secret." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium", ep:"Book 2: Bitter Work",
+    q:"What is the core philosophical difference between airbending and earthbending Toph teaches Aang?",
+    a:"Airbending evades; earthbending stands firm and confronts directly", explain:"Aang's instinct to dodge everything is exactly wrong for earthbending." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"medium", ep:"Book 3: The Puppetmaster",
+    q:"What is bloodbending's only limitation?",
+    a:"It requires the full moon", explain:"Hama explains the full moon's power amplifies waterbending enough to move blood." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"hard", ep:"Book 2: The Desert",
+    q:"What is sandbending?",
+    a:"An earthbending variant used by desert tribes to surf on sand", explain:"Sandbenders move across the Si Wong Desert on large sand-sailing skiffs." },
+
+  // ── NEW: SPIRITS & LORE ──────────────────────────────────
+  { cat:"spirits", catName:"Spirits & Lore", diff:"medium", ep:"Book 2: The Library",
+    q:"What does Wan Shi Tong do when he realizes Team Avatar used his library for war?",
+    a:"He sinks the library into the desert and tries to trap them", explain:"Wan Shi Tong considers using knowledge for war a betrayal of his purpose." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard", ep:"Book 2: The Library",
+    q:"What are Wan Shi Tong's animal helpers called?",
+    a:"Knowledge Seekers", explain:"Wan Shi Tong's fox-like spirit companions gather knowledge and return it to the library." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard", ep:"Book 1: The Siege of the North",
+    q:"What spirit does Aang merge with at the end of the Siege of the North?",
+    a:"La, the Ocean Spirit", explain:"With Tui dead, La is enraged. Aang merges with La to become a giant destructive entity." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard", ep:"Book 2: The Swamp",
+    q:"What does the ancient tree in the Foggy Swamp spiritually represent?",
+    a:"That all life in the world is connected", explain:"The swamp's banyan-grove tree is a living network — an early hint of Aang's spiritual path." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"hard",
+    q:"What is Koh the Face Stealer's personal connection to the Avatar lineage?",
+    a:"He stole the face of a woman Avatar Kuruk loved", explain:"Koh did it to spite Kuruk for his arrogance. Aang must show no emotion or face the same fate." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"medium", ep:"Book 3: The Avatar and the Fire Lord",
+    q:"What does Avatar Roku warn Sozin about in their final living confrontation?",
+    a:"To abandon his imperialist ambitions or face consequences", explain:"Roku destroys Sozin's palace as a warning — but spares him out of their old friendship." },
+
+  // ── NEW: EPISODES & STORY ────────────────────────────────
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 1: The Blue Spirit",
+    q:"Why does Zuko rescue Aang from Zhao as the Blue Spirit?",
+    a:"So he can capture Aang himself and restore his own honor", explain:"Zhao capturing Aang would have denied Zuko his chance. It's a selfish rescue." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 1: The Blue Spirit",
+    q:"What does Aang ask Zuko at the end of 'The Blue Spirit' that Zuko cannot answer?",
+    a:"Whether they could have been friends in another life", explain:"The moment hints at their eventual friendship — Zuko stares but says nothing." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 1: The Fortuneteller",
+    q:"What does fortuneteller Aunt Wu predict for Katara?",
+    a:"That she will marry a very powerful bender", explain:"A fan-favorite prophecy hinting at her future with Aang." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 1: Imprisoned",
+    q:"Why is Haru arrested by the Fire Nation?",
+    a:"He used earthbending to save an old man trapped in a mine collapse", explain:"The Fire Nation outlaws earthbending in occupied territories." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 1: Imprisoned",
+    q:"What does Katara give the imprisoned earthbenders to inspire their revolt?",
+    a:"Coal — which they can earthbend", explain:"Katara's speech alone wasn't enough; giving them something to bend sparked the rebellion." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 2: The Serpent's Pass",
+    q:"What is the Serpent's Pass?",
+    a:"A dangerous narrow route through the water to reach Ba Sing Se", explain:"Team Avatar takes this route to avoid Fire Nation checkpoints — the sea serpent lurks there." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 2: Tales of Ba Sing Se",
+    q:"What does Iroh do in his 'Tales of Ba Sing Se' segment?",
+    a:"Helps a crying girl, redirects a mugger, then visits Lu Ten's grave alone", explain:"The segment ends with Iroh weeping at his son's grave — one of the show's most emotional scenes." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 2: Appa's Lost Days",
+    q:"Who sold Appa after the sandbenders captured him?",
+    a:"He was passed through merchants and ended up with the Dai Li at Lake Laogai", explain:"'Appa's Lost Days' follows Appa's journey entirely from his own perspective." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 2: The Guru",
+    q:"Why does Aang fail to fully unlock his final chakra in 'The Guru'?",
+    a:"He has a vision of Katara in danger and abandons the process to save her", explain:"Guru Pathik warns him that giving up means losing the Avatar State — Aang chooses Katara anyway." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 2: Crossroads of Destiny",
+    q:"How does Aang survive being killed by Azula's lightning?",
+    a:"Katara revives him using spirit water from the North Pole", explain:"Katara had kept the spirit water since Book 1. Without it the Avatar cycle would have ended." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 2: Zuko Alone",
+    q:"What does Zuko do in 'Zuko Alone' that reveals his identity to the village?",
+    a:"He firebends to protect a boy named Lee", explain:"The villagers turn on him after this — he rides away alone, not accepted by either side." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 3: The Day of Black Sun",
+    q:"Why does the Day of Black Sun invasion fail?",
+    a:"Ozai and the royal family hid in underground bunkers — Azula had predicted the attack", explain:"Azula taunts Zuko with this during the eclipse, having prepared for months." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 3: The Southern Raiders",
+    q:"Who accompanies Katara on her mission to find her mother's killer?",
+    a:"Zuko", explain:"Zuko helps Katara to earn her trust and prove he has truly changed." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 3: Sozin's Comet",
+    q:"How does Katara defeat Azula in the finale's Agni Kai?",
+    a:"She chains herself as bait, then encases Azula in ice using a nearby water source",
+    explain:"Azula's mental breakdown made her predictable — Katara used that against her." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 3: Sozin's Comet",
+    q:"What mental state is Azula in during the finale?",
+    a:"She is in a breakdown — hallucinating her mother and acting erratically",
+    explain:"Azula's perfectionism, isolation, and Mai and Ty Lee's betrayals finally shatter her." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 1: The Great Divide",
+    q:"How does Aang resolve the feud between the Zhang and Gan Jin clans?",
+    a:"He invents a shared ancestor story that reframes both clans' histories", explain:"Aang makes up 'Tong the pilgrim' to give both sides common ground — it works." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 3: The Avatar and the Fire Lord",
+    q:"What family connection does Zuko discover about himself and Avatar Roku?",
+    a:"Roku is Zuko's great-grandfather on his mother's side", explain:"This means Zuko carries both Sozin's and Roku's bloodlines — he alone can redeem the Fire Nation." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 3: The Firebending Masters",
+    q:"Why has Zuko lost his firebending ability in 'The Firebending Masters'?",
+    a:"His bending was powered by anger and rage — now that he has changed, he has no fuel", explain:"He and Aang seek the Sun Warriors to find a new source: fire as life energy." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 3: The Boiling Rock",
+    q:"What is the warden of the Boiling Rock's family connection to Zuko's circle?",
+    a:"He is Mai's uncle", explain:"This makes Mai's eventual betrayal to save Zuko even more loaded — she crosses her own family." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 3: The Runaway",
+    q:"What is Toph's scheme to earn money for the group in 'The Runaway'?",
+    a:"She rigs earthbending matches — pretending to lose, then secretly winning", explain:"Her scam works until Katara disapproves and the Fire Nation uses it to trap her." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 2: Bitter Work",
+    q:"What finally helps Aang grasp earthbending in 'Bitter Work'?",
+    a:"Being stuck at the bottom of a canyon with no way out forces him to stand his ground", explain:"Sokka's cactus-juice hallucinations below him are a bonus comedic element of the scene." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 1: The Northern Air Temple",
+    q:"What is the name of the Mechanist's son who glides at the Northern Air Temple?",
+    a:"Teo", explain:"Teo uses an air-current glider his father built, which is how Aang bonds with him." },
+  { cat:"story", catName:"Episodes & Story", diff:"medium", ep:"Book 2: The Library",
+    q:"What crucial discovery does Sokka make in Wan Shi Tong's library?",
+    a:"The date of a solar eclipse — the Day of Black Sun", explain:"This shapes the entire strategy of Book 3's invasion plan." },
+  { cat:"story", catName:"Episodes & Story", diff:"hard", ep:"Book 2-3",
+    q:"How does King Bumi choose to wait for the right moment to free Omashu?",
+    a:"He allows himself to be captured and waits in a metal coffin until Sozin's Comet", explain:"'Neutral jing' — waiting and listening. Bumi reclaims Omashu single-handedly during the comet." },
+
+  // ── EXPERT QUESTIONS ─────────────────────────────────────
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 1: The Blue Spirit",
+    q:"What is the name of the Fire Nation fortress where Aang is held captive in 'The Blue Spirit'?",
+    a:"Pohuai Stronghold",
+    explain:"Zhao uses the stronghold to imprison Aang after a Yuyan archer captures him mid-flight." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 1: Imprisoned",
+    q:"What is the name of Haru's father who is imprisoned on the metal rig?",
+    a:"Tyro",
+    explain:"Tyro leads the earthbender prisoners in their revolt after Katara inspires them with coal." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 2: The Swamp",
+    q:"Who is the leader of the Foggy Swamp Tribe?",
+    a:"Huu",
+    explain:"Huu is a waterbender who controls the swamp's giant vines — he is the 'swamp monster' the gang encounters." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 2: The Swamp",
+    q:"How does Huu move through the Foggy Swamp and what does it represent?",
+    a:"He waterbends through the banyan-grove tree's vines — representing all life being connected",
+    explain:"The banyan-grove tree's roots reach across the world, and Huu channels that interconnection." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 1: The Fortuneteller",
+    q:"What is the name of the village where fortuneteller Aunt Wu lives?",
+    a:"Makapu Village",
+    explain:"The whole village blindly follows Aunt Wu's cloud-reading prophecies, even as the volcano clearly shows signs of erupting." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 1: The Fortuneteller",
+    q:"What method does Aunt Wu use to tell fortunes?",
+    a:"She reads cloud formations",
+    explain:"Aang uses his airbending to reshape clouds and manipulate her readings — she predicts he is 'a great man with a big smile.'" },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 3: The Avatar and the Fire Lord",
+    q:"What is the name of Avatar Roku's wife?",
+    a:"Ta Min",
+    explain:"Roku chose to marry Ta Min over his duty at the Avatar Shrine — the last decision he made as a private man before fully embracing his Avatar role." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: City of Walls and Secrets",
+    q:"What is a Joo Dee in Ba Sing Se?",
+    a:"A government-assigned handler who redirects all talk of war",
+    explain:"Every foreign visitor gets a Joo Dee. Multiple women play the role — Long Feng replaces them when they step out of line." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: City of Walls and Secrets",
+    q:"What phrase do Joo Dee handlers repeat whenever the war is mentioned?",
+    a:"There is no war in Ba Sing Se",
+    explain:"Long Feng's psychological control — deny the war exists, maintain peace through ignorance." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: City of Walls and Secrets",
+    q:"What is Long Feng's official title in Ba Sing Se?",
+    a:"Grand Secretariat of Ba Sing Se",
+    explain:"He runs the Dai Li and the city's information flow, keeping King Kuei completely uninformed." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: The Earth King",
+    q:"What happens to Long Feng after Azula turns the Dai Li against him?",
+    a:"He is imprisoned in his own jail",
+    explain:"Azula outmaneuvers Long Feng by convincing the Dai Li their loyalty should be to whoever is strongest — then demonstrating it is her." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 2: Crossroads of Destiny",
+    q:"What does Katara offer Zuko in the crystal catacombs before Azula arrives?",
+    a:"To heal his scar using her spirit water",
+    explain:"It's one of the show's most pivotal scenes — Zuko almost makes the right choice before Azula's arrival undoes everything." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 2: The Library",
+    q:"What is the name of the Earth Kingdom scholar who enters Wan Shi Tong's library with Team Avatar?",
+    a:"Professor Zei",
+    explain:"Professor Zei is so overwhelmed by the library's contents that he refuses to leave — even as it sinks into the desert." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 2: The Library",
+    q:"What is Wan Shi Tong's rule for using the library?",
+    a:"You must bring new knowledge in exchange for what you seek",
+    explain:"Team Avatar brings information about Fire Nation military tactics — then violates the spirit of the deal by using it for war." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: Sokka's Master",
+    q:"What does Piandao reveal about himself to Sokka at the end of their training?",
+    a:"That he is a member of the Order of the White Lotus",
+    explain:"Piandao recognized the White Lotus tile in Sokka's painting and reveals his true allegiance." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 3: The Boiling Rock",
+    q:"What does Mai say to Azula when she betrays her at the Boiling Rock?",
+    a:"That she loves Zuko more than she fears Azula",
+    explain:"Mai stops the gondola pursuit to save Zuko's life — one of the show's most surprising character moments." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 3: The Boiling Rock",
+    q:"What does Ty Lee do at the Boiling Rock that shocks Azula?",
+    a:"She chi-blocks Azula to stop her from attacking Mai",
+    explain:"Ty Lee, always cheerful and subservient, finally acts on her own conscience — and saves Mai's life." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 3: Sozin's Comet",
+    q:"Where do Ty Lee and the Kyoshi Warriors end up at the end of the series?",
+    a:"Ty Lee joins the Kyoshi Warriors",
+    explain:"Bonding with them during imprisonment at the Boiling Rock, Ty Lee finds her true community." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 3: Sozin's Comet",
+    q:"What does Zuko demand from Ozai before leaving to help Aang?",
+    a:"The truth about what happened to his mother Ursa",
+    explain:"Ozai finally tells Zuko where Ursa was sent — Zuko's search for her continues in the post-series comics." },
+  { cat:"water", catName:"Water Tribes", diff:"expert", ep:"Book 3: The Southern Raiders",
+    q:"What bending technique does Katara use on Yon Rha that she swore she never would?",
+    a:"Bloodbending",
+    explain:"She uses it to stop him, then releases him — she cannot bring herself to kill an old, broken man." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: The Puppetmaster",
+    q:"How does Hama use bloodbending on Fire Nation villagers without being seen?",
+    a:"She controls them from a distance on full moon nights and imprisons them in a mountain cave",
+    explain:"The 'missing people' mystery in the village turns out to be Hama's revenge against the Fire Nation." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 2: Zuko Alone",
+    q:"What do young Zuko and Ursa do together in 'Zuko Alone' that shows her gentleness?",
+    a:"They feed turtle ducks at the palace pond — she shows him how to offer bread gently",
+    explain:"It's one of Zuko's warmest memories, contrasted immediately with Azula throwing bread aggressively." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 2: Zuko Alone",
+    q:"What are turtle ducks?",
+    a:"A hybrid creature — part turtle, part duck — found in Fire Nation palace gardens",
+    explain:"They appear in Zuko's flashbacks as a symbol of his lost innocent childhood." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 2: Zuko Alone",
+    q:"What does young Azula do to the turtle ducks that shows her cruelty early on?",
+    a:"She throws bread at them aggressively and provokes one into biting Zuko",
+    explain:"A small but telling moment — Azula's cruelty appears even in childhood play." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 3: Sozin's Comet",
+    q:"What does the lion turtle say about the nature of bending before the Four Nations existed?",
+    a:"In the era before the Avatar, people bent the energy within themselves, not the elements",
+    explain:"This is the ancient secret that unlocks energybending — the original form before elemental bending was taught by animals." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 3: The Avatar and the Fire Lord",
+    q:"What did Fire Lord Sozin do with his final years after the genocide of the Air Nomads?",
+    a:"He spent decades trying to find the Avatar and died full of regret, never finding him",
+    explain:"Sozin's dying monologue reveals his guilt over betraying Roku and failing to find the reincarnated Avatar." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 3: Sozin's Comet",
+    q:"What does Avatar Yangchen tell Aang about an Air Nomad's true duty?",
+    a:"That the monks' teachings say to detach from the world — but an Avatar cannot, because the world is their home",
+    explain:"Yangchen tells Aang that as Avatar, personal spiritual peace must be sacrificed for the world's needs." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 3: Sozin's Comet",
+    q:"What does Avatar Kyoshi advise Aang to do about Ozai?",
+    a:"She says to destroy him — that leaving a threat alive is a dangerous weakness",
+    explain:"Kyoshi was known for ruthless pragmatism. She created the Dai Li and killed Chin without hesitation." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"expert", ep:"Book 2: The Swamp",
+    q:"What is 'neutral jing' and which character most embodies it?",
+    a:"Waiting and listening for the right moment — King Bumi",
+    explain:"Bumi stays in his metal coffin for months under Fire Nation occupation, practicing neutral jing until Sozin's Comet gives him the perfect moment." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: The Blind Bandit",
+    q:"What does The Boulder say before his fight with Toph at Earth Rumble VI?",
+    a:"'The Boulder feels conflicted about fighting a little blind girl!'",
+    explain:"The Boulder is a running parody of wrestling personas — voiced with dramatic third-person monologues." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: The Painted Lady",
+    q:"What is the name of the Fire Nation fishing village Katara helps as the Painted Lady?",
+    a:"Jang Hui",
+    explain:"A Fire Nation factory upstream has been poisoning the river and sickening the village — Katara destroys it." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: The Avatar and the Fire Lord",
+    q:"What connection does Aang learn he shares with Fire Lord Ozai through Zuko's bloodline?",
+    a:"Zuko is the great-grandson of both Sozin and Roku — meaning Aang's old enemy's bloodline runs in the person who helps him",
+    explain:"Roku was Ozai's maternal grandfather. Zuko carries both the war-starter's and the Avatar's predecessor's blood." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 2: Appa's Lost Days",
+    q:"In 'Appa's Lost Days,' who first captures Appa after the sandbenders sell him?",
+    a:"A Fire Nation circus trainer",
+    explain:"The episode follows Appa's journey entirely from his perspective — he's mistreated at a traveling circus before the Dai Li take him." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 1: The Storm",
+    q:"In 'The Storm,' whose storyline is shown in parallel with Aang's that mirrors his own burden?",
+    a:"Zuko's — both flashbacks show them pressured by authority figures and making desperate choices",
+    explain:"Aang fled responsibility; Zuko spoke out of turn. Both suffered for the choices made under pressure." },
+  { cat:"gaang", catName:"Team Avatar", diff:"expert", ep:"Book 1: The King of Omashu",
+    q:"What is the answer to King Bumi's final challenge — who is 'the most powerful earthbender Aang knows'?",
+    a:"Bumi himself — his old friend",
+    explain:"Aang searched Omashu for a great earthbender; the answer was the eccentric old king who had been testing him all along." },
+  { cat:"gaang", catName:"Team Avatar", diff:"expert", ep:"Book 1: The Waterbending Scroll",
+    q:"What specific waterbending technique does Katara perfect from the stolen scroll — and later teaches Aang?",
+    a:"The water whip",
+    explain:"The water whip becomes one of Katara's signature moves throughout the series." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 1: The Storm",
+    q:"What does Iroh whisper to Zuko when Zuko breaks down crying on his ship in 'The Storm'?",
+    a:"He calls him nephew and holds him — no words are spoken",
+    explain:"One of the most tender moments in the show — Iroh offers silent comfort as Zuko grieves everything he has lost." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"expert", ep:"Book 3: The Firebending Masters",
+    q:"What test do Ran and Shaw give Zuko and Aang before teaching them?",
+    a:"They must present their fire — their inner flame — to the dragons, who judge its nature",
+    explain:"The dragons circle them in the Dancing Dragon formation, reading the truth of their fire before deciding whether to teach or destroy them." },
+  { cat:"water", catName:"Water Tribes", diff:"expert", ep:"Book 2: The Serpent's Pass",
+    q:"What unexpected event happens at the Serpent's Pass that gives the group hope?",
+    a:"A baby is born — Momo's reaction and the newborn's name Hope",
+    explain:"Suki and Sokka help a pregnant refugee named Ying deliver her baby. They name her Hope, which is what Sokka had claimed they couldn't afford." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: Return to Omashu",
+    q:"In 'Return to Omashu,' what does the resistance leader Yung refuse to negotiate?",
+    a:"Surrendering Bumi in exchange for safe passage out of occupied Omashu",
+    explain:"The resistance wants Bumi to help them fight, not knowing Bumi is intentionally waiting (neutral jing)." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: Nightmares and Daydreams",
+    q:"In 'Nightmares and Daydreams,' what absurd dream sequence features Sokka and Momo?",
+    a:"A samurai dream where Sokka and Momo fight an epic duel — Appa fights a giant Momo",
+    explain:"Aang's sleep deprivation produces increasingly bizarre hallucinations, including Sokka speaking in a samurai accent." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: The Awakening",
+    q:"In 'The Awakening,' what tactical decision does Aang make about the world thinking he is dead?",
+    a:"He decides to keep them thinking the Avatar is dead to give Team Avatar a strategic advantage",
+    explain:"Aang swallows his guilt and lets the deception stand — the Fire Nation believing they won removes pressure." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 1: The Blue Spirit",
+    q:"What weapons does the Blue Spirit (Zuko) use in his rescue of Aang?",
+    a:"Dual dao swords",
+    explain:"The twin swords are Zuko's signature backup weapon throughout the series — he trained with them intensively." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"expert", ep:"Book 2: The Chase",
+    q:"What new firebending technique does Azula demonstrate in 'The Chase' that she uses throughout Book 2?",
+    a:"Shooting lightning",
+    explain:"Azula is one of the few people who can generate lightning — she uses it to kill Aang in the finale of Book 2." },
+  { cat:"gaang", catName:"Team Avatar", diff:"expert", ep:"Book 2: The Guru",
+    q:"What are the seven chakras Guru Pathik teaches Aang, in order?",
+    a:"Earth (survival), Water (pleasure), Fire (willpower), Air (love), Sound (truth), Light (insight), Thought (cosmic energy)",
+    explain:"Each must be unblocked by releasing a corresponding emotional burden. The Thought chakra requires releasing earthly attachment." },
+  { cat:"spirits", catName:"Spirits & Lore", diff:"expert", ep:"Book 1: The Siege of the North",
+    q:"What does Admiral Zhao quote from a captured Fire Nation document about the Moon Spirit's weakness?",
+    a:"That the Moon Spirit took mortal form as a koi fish and could be killed",
+    explain:"Zhao found this in Wan Shi Tong's library during a previous expedition — the information Sokka later also discovers." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 2: Tales of Ba Sing Se",
+    q:"In Zuko's tale in 'Tales of Ba Sing Se,' who does he take on a date?",
+    a:"Jin, a girl who works near the tea shop",
+    explain:"Zuko awkwardly tries to be a normal teenager. He lights the lanterns on their date using his covered firebending — then panics and runs." },
+  { cat:"fire", catName:"Fire Nation", diff:"expert", ep:"Book 1: The Siege of the North",
+    q:"What does Zuko do during the Siege of the North that is independent of Zhao's mission?",
+    a:"He sneaks into the spirit oasis alone and kidnaps Aang while he is in the Spirit World",
+    explain:"Zuko's solo mission during the siege shows his obsession with Aang — even as the battle rages, he pursues his personal goal." },
+  { cat:"gaang", catName:"Team Avatar", diff:"expert", ep:"Book 3: The Southern Raiders",
+    q:"What does Zuko reveal to Katara about his own mother that creates a bond between them?",
+    a:"That his mother also sacrificed herself — she was banished and he grew up without her too",
+    explain:"This shared grief is what convinces Katara to let Zuko help her find Yon Rha." },
+  { cat:"earth", catName:"Earth Kingdom", diff:"expert", ep:"Book 2: Lake Laogai",
+    q:"What trigger phrase does Long Feng use to activate Jet's brainwashing?",
+    a:"'The Earth King has invited you to Lake Laogai'",
+    explain:"This phrase snaps Jet back into his brainwashed state against his will — a chilling demonstration of the Dai Li's psychological control." },
+  { cat:"bending", catName:"Bending & Techniques", diff:"expert",
+    q:"Why can Toph sense when people are lying?",
+    a:"Her seismic sense detects involuntary physical changes — heart rate, muscle tension — that occur when lying",
+    explain:"This is how she acts as a lie detector throughout Book 2 and 3, which Team Avatar uses tactically." },
+  { cat:"story", catName:"Episodes & Story", diff:"expert", ep:"Book 3: Sozin's Comet",
+    q:"What specific water source does Katara use to encase Azula during their finale fight?",
+    a:"Water from a nearby drainage gutter",
+    explain:"Katara chains herself as bait, then waterbends from an unexpected source — Azula's mental state makes her unable to predict it." }
 ];
 
-// ── STATE ──────────────────────────────────────────────────
-let selectedCat   = "all";
-let studyDeck     = [], studyIdx = 0, studyRevealed = false;
-let triviaDeck    = [], triviaIdx = 0, triviaScore = 0;
-let triviaWrong   = [], triviaAnswered = false;
+// ── STATE ─────────────────────────────────────────────────
+let selectedCat  = "all";
+let selectedDiff = "all";
+let gameSize     = 50;
+let studyDeck    = [], studyIdx = 0, studyRevealed = false;
+let triviaDeck   = [], triviaIdx = 0, triviaScore = 0;
+let triviaWrong  = [], triviaAnswered = false;
 
 // ── HELPERS ───────────────────────────────────────────────
 const CAT_NAMES = {
@@ -607,8 +1075,10 @@ function shuffle(arr) {
   return a;
 }
 function getFiltered() {
-  return selectedCat === "all" ? [...ALL_QUESTIONS]
-    : ALL_QUESTIONS.filter(q => q.cat === selectedCat);
+  return ALL_QUESTIONS.filter(q =>
+    (selectedCat  === "all" || q.cat  === selectedCat) &&
+    (selectedDiff === "all" || q.diff === selectedDiff)
+  );
 }
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -622,109 +1092,80 @@ function grade(pct) {
   if (pct >= 35) return "Beginning Waterbender";
   return "Air Nomad Apprentice";
 }
-
-// ── ANSWER MATCHING ────────────────────────────────────────
-// Strips honorifics/titles so "pakku" matches "master pakku", etc.
-const TITLES = new Set([
-  'master','prince','princess','general','admiral','lord','fire','king','queen',
-  'avatar','chief','monk','guru','colonel','captain','commander','sergeant',
-  'shifu','uncle','aunt'
-]);
-const STOP = new Set([
-  'a','an','the','and','or','of','in','on','at','to','for','is','was','by',
-  'with','as','it','from','that','this','who','not','but','so','if','are',
-  'has','had','have','he','she','they','his','her','their','its','was'
-]);
-
-function normalize(s) {
-  return s.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+function diffLabel(d) {
+  return { easy:"Easy", medium:"Medium", hard:"Hard", expert:"Expert" }[d] || d;
 }
-function compact(s) {
-  return s.toLowerCase().replace(/[^a-z0-9]/g,'');
-}
-function keyWords(s) {
-  return normalize(s).split(' ').filter(w => w.length >= 2 && !STOP.has(w) && !TITLES.has(w));
-}
-
-// Damerau-Levenshtein — counts transpositions (fnag↔fang) as 1 edit, not 2
-function lev(a, b) {
-  const m = a.length, n = b.length;
-  const dp = Array.from({length: m+1}, (_,i) => Array.from({length: n+1}, (_,j) => j === 0 ? i : 0));
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      const cost = a[i-1] === b[j-1] ? 0 : 1;
-      dp[i][j] = Math.min(
-        dp[i-1][j] + 1,
-        dp[i][j-1] + 1,
-        dp[i-1][j-1] + cost
-      );
-      if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1])
-        dp[i][j] = Math.min(dp[i][j], dp[i-2][j-2] + cost);
-    }
-  }
-  return dp[m][n];
-}
-
-function isCorrect(userInput, correctAnswer) {
-  const u = normalize(userInput);
-  const c = normalize(correctAnswer);
-
-  // exact after normalization
-  if (u === c) return true;
-  // compact (handles "water bending" = "waterbending")
-  if (compact(u) === compact(c)) return true;
-
-  // strip titles from both sides and re-check
-  const uStripped = keyWords(userInput).join(' ');
-  const cStripped = keyWords(correctAnswer).join(' ');
-  if (uStripped && cStripped && uStripped === cStripped) return true;
-  if (compact(uStripped) === compact(cStripped)) return true;
-
-  // word-set fuzzy: 70% of key words must match (exactly, compactly, or within 1 edit)
-  const uWords      = new Set(keyWords(userInput));
-  const uCompact    = compact(userInput);
-  const cWords      = keyWords(correctAnswer);
-  if (!cWords.length) return false;
-
-  const matched = cWords.filter(cw => {
-    if (uWords.has(cw)) return true;
-    if (uCompact.includes(compact(cw))) return true;
-    // 1-letter typo tolerance for words longer than 3 chars
-    if (cw.length > 3) {
-      for (const uw of uWords) {
-        if (uw.length > 2 && lev(uw, cw) <= 1) return true;
-      }
-    }
-    return false;
-  }).length;
-
-  return matched / cWords.length >= 0.7;
+function setDiffBadge(el, diff) {
+  el.textContent = diffLabel(diff);
+  el.className   = `diff-badge diff-${diff}`;
 }
 
 // ── HOME ──────────────────────────────────────────────────
 function showHome() {
   show("home");
+  const poolSize  = getFiltered().length;
+  const drawSize  = Math.min(poolSize, gameSize);
+  const sizeLabel = gameSize >= 999 ? "all" : `${drawSize}`;
+  document.getElementById("home-bar").textContent =
+    `${poolSize} available · drawing ${sizeLabel} per game · type your answers`;
+
   document.querySelectorAll("#home-chips .chip").forEach(chip => {
     const cat = chip.dataset.cat;
-    const count = cat === "all" ? ALL_QUESTIONS.length
-      : ALL_QUESTIONS.filter(q => q.cat === cat).length;
+    const count = ALL_QUESTIONS.filter(q =>
+      (cat === "all" || q.cat === cat) &&
+      (selectedDiff === "all" || q.diff === selectedDiff)
+    ).length;
     chip.textContent = cat === "all" ? `All (${count})` : `${CAT_NAMES[cat]} (${count})`;
   });
+
+  document.querySelectorAll("#diff-chips .chip").forEach(chip => {
+    const diff = chip.dataset.diff;
+    const count = ALL_QUESTIONS.filter(q =>
+      (selectedCat === "all" || q.cat === selectedCat) &&
+      (diff === "all" || q.diff === diff)
+    ).length;
+    chip.textContent = diff === "all" ? `All (${count})` : `${diffLabel(diff)} (${count})`;
+  });
 }
+
 document.querySelectorAll("#home-chips .chip").forEach(chip => {
   chip.addEventListener("click", () => {
     document.querySelectorAll("#home-chips .chip").forEach(c => c.classList.remove("selected"));
     chip.classList.add("selected");
     selectedCat = chip.dataset.cat;
+    showHome();
   });
 });
+
+document.querySelectorAll("#diff-chips .chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll("#diff-chips .chip").forEach(c => {
+      c.classList.remove("selected","sel-easy","sel-medium","sel-hard");
+    });
+    const diff = chip.dataset.diff;
+    chip.classList.add(diff === "all" ? "selected" : `sel-${diff}`);
+    selectedDiff = diff;
+    showHome();
+  });
+});
+
+document.querySelectorAll("#size-chips .chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll("#size-chips .chip").forEach(c => c.classList.remove("selected"));
+    chip.classList.add("selected");
+    gameSize = parseInt(chip.dataset.size);
+    showHome();
+  });
+});
+
 document.getElementById("home-study-btn").addEventListener("click", startStudy);
 document.getElementById("home-trivia-btn").addEventListener("click", startTrivia);
 
 // ── STUDY ─────────────────────────────────────────────────
 function startStudy() {
-  studyDeck = shuffle(getFiltered()); studyIdx = 0;
+  const pool = getFiltered();
+  if (!pool.length) { alert("No questions match the selected filters."); return; }
+  studyDeck = shuffle(pool).slice(0, gameSize); studyIdx = 0;
   show("study"); renderStudyCard();
 }
 function renderStudyCard() {
@@ -737,9 +1178,11 @@ function renderStudyCard() {
   document.getElementById("s-prog").style.width       = `${(studyIdx/total)*100}%`;
   document.getElementById("s-prog-label").textContent = `${studyIdx} reviewed`;
   document.getElementById("s-badge").textContent      = q.catName;
+  setDiffBadge(document.getElementById("s-diff"), q.diff);
   document.getElementById("s-question").textContent   = q.q;
   document.getElementById("s-answer").textContent     = q.a;
   document.getElementById("s-explain").textContent    = q.explain || "";
+  document.getElementById("s-ep").textContent         = q.ep ? `Episode: ${q.ep}` : "";
   document.getElementById("s-reveal").style.display     = "none";
   document.getElementById("s-reveal-btn").style.display = "inline-flex";
   document.getElementById("s-next-row").style.display   = "none";
@@ -755,13 +1198,16 @@ function nextStudyCard() {
   if (studyIdx >= studyDeck.length) showStudyDone(); else renderStudyCard();
 }
 function studyShuffle() {
-  studyDeck = shuffle(getFiltered()); studyIdx = 0; renderStudyCard();
+  const pool = getFiltered();
+  if (!pool.length) { alert("No questions match the selected filters."); return; }
+  studyDeck = shuffle(pool).slice(0, gameSize); studyIdx = 0; renderStudyCard();
 }
 function showStudyDone() {
   document.getElementById("s-prog").style.width       = "100%";
   document.getElementById("s-num").textContent        = studyDeck.length;
   document.getElementById("s-prog-label").textContent = "complete";
   document.getElementById("s-badge").textContent      = "Complete";
+  document.getElementById("s-diff").textContent       = "";
   document.getElementById("s-question").textContent   = `All ${studyDeck.length} cards reviewed.`;
   document.getElementById("s-answer").textContent     = "Nice work!";
   document.getElementById("s-explain").textContent    = "Hit Shuffle to go again.";
@@ -773,7 +1219,9 @@ document.getElementById("study-back").addEventListener("click", showHome);
 
 // ── TRIVIA ────────────────────────────────────────────────
 function startTrivia() {
-  triviaDeck = shuffle(getFiltered());
+  const pool = getFiltered();
+  if (!pool.length) { alert("No questions match the selected filters."); return; }
+  triviaDeck = shuffle(pool).slice(0, gameSize);
   triviaIdx = 0; triviaScore = 0; triviaWrong = []; triviaAnswered = false;
   show("trivia"); renderTriviaQ();
 }
@@ -788,6 +1236,7 @@ function renderTriviaQ() {
   document.getElementById("t-score").textContent    = triviaScore;
   document.getElementById("t-prog").style.width     = `${(triviaIdx/total)*100}%`;
   document.getElementById("t-badge").textContent    = q.catName;
+  setDiffBadge(document.getElementById("t-diff"), q.diff);
   document.getElementById("t-question").textContent = q.q;
   const input = document.getElementById("t-input");
   input.value = ""; input.disabled = false;
@@ -799,33 +1248,107 @@ function renderTriviaQ() {
   document.getElementById("t-feedback").className        = "t-feedback";
   document.getElementById("t-correct-ans").textContent   = "";
   document.getElementById("t-correct-ans").style.opacity = "1";
+  document.getElementById("t-ep").textContent            = "";
   setTimeout(() => input.focus(), 50);
 }
 
+// ── ANSWER MATCHING ───────────────────────────────────────
+const TITLES = new Set([
+  'master','prince','princess','general','admiral','lord','fire','king','queen',
+  'avatar','chief','monk','guru','colonel','captain','commander','sergeant',
+  'shifu','uncle','aunt'
+]);
+const STOP = new Set([
+  'a','an','the','and','or','of','in','on','at','to','for','is','was','by',
+  'with','as','it','from','that','this','who','not','but','so','if','are',
+  'has','had','have','he','she','they','his','her','their','its'
+]);
+
+function normalize(s) {
+  return s.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+}
+function compact(s) { return s.toLowerCase().replace(/[^a-z0-9]/g,''); }
+function keyWords(s) {
+  return normalize(s).split(' ').filter(w => w.length >= 2 && !STOP.has(w) && !TITLES.has(w));
+}
+function spellNorm(s) {
+  return s.toLowerCase()
+    .replace(/\bqi\b/g, 'chi')
+    .replace(/\bqigong\b/g, 'chigong')
+    .replace(/\bki\b/g, 'chi');
+}
+// Strip common suffixes so "poisoned"="poison", "destroys"="destroy", etc.
+function stem(w) {
+  if (w.length < 4) return w;
+  if (w.endsWith('ied'))  return w.slice(0,-3) + 'y';
+  if (w.endsWith('ing'))  return w.slice(0,-3);
+  if (w.endsWith('ed'))   return w.slice(0,-2);
+  if (w.endsWith('es') && w.length > 4) return w.slice(0,-2);
+  if (w.endsWith('s') && !w.endsWith('ss') && w.length > 3) return w.slice(0,-1);
+  return w;
+}
+
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({length:m+1}, (_,i) => Array.from({length:n+1}, (_,j) => j===0?i:0));
+  for (let j=0; j<=n; j++) dp[0][j]=j;
+  for (let i=1; i<=m; i++) {
+    for (let j=1; j<=n; j++) {
+      const cost = a[i-1]===b[j-1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+      if (i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])
+        dp[i][j] = Math.min(dp[i][j], dp[i-2][j-2]+cost);
+    }
+  }
+  return dp[m][n];
+}
+function isCorrect(userInput, correctAnswer) {
+  userInput     = spellNorm(userInput);
+  correctAnswer = spellNorm(correctAnswer);
+  const u = normalize(userInput), c = normalize(correctAnswer);
+  if (u === c) return true;
+  if (compact(u) === compact(c)) return true;
+  const uStr = keyWords(userInput).join(' '), cStr = keyWords(correctAnswer).join(' ');
+  if (uStr && cStr && uStr === cStr) return true;
+  if (compact(uStr) === compact(cStr) && uStr) return true;
+  const uWords = new Set(keyWords(userInput)), uCmp = compact(userInput);
+  const cWords = keyWords(correctAnswer);
+  if (!cWords.length) return false;
+  const matched = cWords.filter(cw => {
+    if (uWords.has(cw)) return true;
+    if (uCmp.includes(compact(cw))) return true;
+    // stem match — handles tense/plurality: "poisoned"="poison", "destroys"="destroy"
+    if (stem(cw).length >= 3) for (const uw of uWords) if (stem(uw) === stem(cw)) return true;
+    // 1-edit typo tolerance for longer words
+    if (cw.length > 3) for (const uw of uWords) if (uw.length > 2 && lev(uw,cw) <= 1) return true;
+    return false;
+  }).length;
+  return matched / cWords.length >= 0.7;
+}
+
+// ── TRIVIA SUBMIT ─────────────────────────────────────────
 function submitTrivia() {
   if (triviaAnswered) return;
   triviaAnswered = true;
-  const input   = document.getElementById("t-input");
+  const input = document.getElementById("t-input");
   const userAns = input.value.trim();
-  const q       = triviaDeck[triviaIdx];
+  const q = triviaDeck[triviaIdx];
   input.disabled = true;
   document.getElementById("t-submit-btn").style.display = "none";
   document.getElementById("t-your-ans").textContent     = userAns || "(no answer)";
   document.getElementById("t-reveal").style.display     = "block";
-
+  document.getElementById("t-ep").textContent = q.ep ? `Episode: ${q.ep}` : "";
   const fb = document.getElementById("t-feedback");
   if (isCorrect(userAns, q.a)) {
     document.getElementById("t-correct-ans").textContent = q.a;
     triviaScore++;
     document.getElementById("t-score").textContent = triviaScore;
-    fb.textContent = "Correct";
-    fb.className   = "t-feedback correct";
+    fb.textContent = "Correct"; fb.className = "t-feedback correct";
   } else {
     document.getElementById("t-correct-ans").textContent  = "?";
     document.getElementById("t-correct-ans").style.opacity = "0.2";
     triviaWrong.push({ q: q.q, a: q.a });
-    fb.textContent = "Incorrect — pick the right one:";
-    fb.className   = "t-feedback wrong";
+    fb.textContent = "Incorrect — pick the right one:"; fb.className = "t-feedback wrong";
     showMC(q.a);
   }
 }
@@ -836,22 +1359,24 @@ function showMC(correctAnswer) {
     ...shuffle(ALL_QUESTIONS.filter(q => q.a !== correctAnswer)).slice(0,3).map(q => q.a)
   ]);
   const container = document.getElementById("t-mc-choices");
-  choices.forEach(choice => {
+  choices.forEach((choice, i) => {
     const btn = document.createElement("button");
     btn.className   = "mc-btn";
-    btn.textContent = choice;
-    btn.onclick = () => {
-      const cell = document.getElementById("t-correct-ans");
-      cell.textContent   = correctAnswer;
-      cell.style.opacity = "1";
-      container.querySelectorAll(".mc-btn").forEach(b => {
-        b.disabled = true;
-        b.classList.add(b.textContent === correctAnswer ? "mc-correct" : "mc-dim");
-      });
-    };
+    btn.dataset.answer = choice;
+    btn.innerHTML   = `<span class="mc-num">${i+1}</span>${choice}`;
+    btn.onclick     = () => selectMC(correctAnswer, container);
     container.appendChild(btn);
   });
   document.getElementById("t-mc-section").style.display = "block";
+}
+
+function selectMC(correctAnswer, container) {
+  document.getElementById("t-correct-ans").textContent   = correctAnswer;
+  document.getElementById("t-correct-ans").style.opacity = "1";
+  container.querySelectorAll(".mc-btn").forEach(b => {
+    b.disabled = true;
+    b.classList.add(b.dataset.answer === correctAnswer ? "mc-correct" : "mc-dim");
+  });
 }
 
 function triviaNext() {
@@ -859,19 +1384,33 @@ function triviaNext() {
   if (triviaIdx >= triviaDeck.length) showResults(); else renderTriviaQ();
 }
 
-// ── GLOBAL ENTER ──────────────────────────────────────────
+// ── GLOBAL KEYBOARD SHORTCUTS ─────────────────────────────
 document.addEventListener("keydown", e => {
-  if (e.key !== "Enter") return;
-  const active = document.querySelector(".screen.active")?.id;
-  if (active === "study") {
-    e.preventDefault();
-    if (!studyRevealed) revealStudy(); else nextStudyCard();
-    return;
+  const active  = document.querySelector(".screen.active")?.id;
+  const focused = document.activeElement.id;
+  const key     = e.key;
+
+  if ((key==='r'||key==='R') && focused !== 't-input') {
+    if (active==='trivia')  { e.preventDefault(); triviaRestart(); return; }
+    if (active==='study')   { e.preventDefault(); studyShuffle();  return; }
+    if (active==='results') { e.preventDefault(); triviaRestart(); return; }
   }
-  if (active === "trivia") {
-    e.preventDefault();
-    if (!triviaAnswered) submitTrivia(); else triviaNext();
+
+  if (['1','2','3','4'].includes(key) && focused !== 't-input') {
+    if (active==='trivia' && triviaAnswered) {
+      const mc = document.getElementById('t-mc-section');
+      if (mc && mc.style.display !== 'none') {
+        const btns = mc.querySelectorAll('.mc-btn:not([disabled])');
+        const btn  = btns[parseInt(key)-1];
+        if (btn) { e.preventDefault(); btn.click(); }
+        return;
+      }
+    }
   }
+
+  if (key !== 'Enter') return;
+  if (active==="study")  { e.preventDefault(); if (!studyRevealed) revealStudy(); else nextStudyCard(); return; }
+  if (active==="trivia") { e.preventDefault(); if (!triviaAnswered) submitTrivia(); else triviaNext(); }
 });
 
 document.getElementById("trivia-back").addEventListener("click", showHome);
@@ -889,10 +1428,8 @@ function showResults() {
   if (triviaWrong.length) {
     sec.innerHTML = `<div class="missed-header">Incorrect — ${triviaWrong.length} question(s)</div>` +
       triviaWrong.map(w =>
-        `<div class="missed-item">
-          <div class="mq">${w.q}</div>
-          <div class="ma">→ ${w.a}</div>
-        </div>`).join("");
+        `<div class="missed-item"><div class="mq">${w.q}</div><div class="ma">→ ${w.a}</div></div>`
+      ).join("");
   } else {
     sec.innerHTML = `<div class="empty-note">Perfect score — you know this show cold.</div>`;
   }
@@ -900,9 +1437,8 @@ function showResults() {
 }
 function studyMissed() {
   if (!triviaWrong.length) { showHome(); return; }
-  const qs = triviaWrong.map(w => ALL_QUESTIONS.find(q => q.q === w.q)).filter(Boolean);
-  studyDeck = shuffle(qs); studyIdx = 0;
-  show("study"); renderStudyCard();
+  const qs = triviaWrong.map(w => ALL_QUESTIONS.find(q => q.q===w.q)).filter(Boolean);
+  studyDeck = shuffle(qs); studyIdx = 0; show("study"); renderStudyCard();
 }
 
 showHome();
